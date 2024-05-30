@@ -1,13 +1,19 @@
 # smartdart-project
 
 ## 1 - server
+
 `cd smartdart-server`
+
 `npm install`
+
 `npm start`
 
 ## 2 - client
+
 `cd smartdart-client`
+
 `npm install`
+
 `npm run dev`
 
 ## 3 clients
