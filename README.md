@@ -6,7 +6,7 @@
 
 `npm install`
 
-`npm start`
+`node index.js`
 
 ## 2 - client
 
