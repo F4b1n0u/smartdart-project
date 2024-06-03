@@ -37,6 +37,13 @@ export const useDartBoard = () => {
   }
 }
 
+const multiplierMapper = {
+  1: Multiplier.SINGLE_SLIM,
+  2: Multiplier.DOUBLE,
+  0: Multiplier.SINGLE_FAT,
+  3: Multiplier.TRIPLE,
+}
+
 const connectToDartBoard = async ({ onConnected, onDartLanding, onButtonPress }) => {
   try {
     const device = await navigator.bluetooth.requestDevice({
@@ -65,7 +72,6 @@ const connectToDartBoard = async ({ onConnected, onDartLanding, onButtonPress })
       "characteristicvaluechanged",
       () => {
         const { value } = event.target;
-        const multiplierMapper = Object.values(Multiplier);
         var dart = {
           score: value.getUint8(0),
           multiplier: multiplierMapper[value.getUint8(1)],

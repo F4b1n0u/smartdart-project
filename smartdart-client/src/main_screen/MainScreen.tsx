@@ -23,8 +23,11 @@ const MainScreen = () => {
   return (
     <div>
       <VirtualDartboard
+        height={800}
+        width={800}
         center={position}
         hits={hits}
+        scale={4}
       />
 
       <ul>

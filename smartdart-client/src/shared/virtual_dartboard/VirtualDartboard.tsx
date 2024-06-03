@@ -186,6 +186,9 @@ const VirtualDartboard = ({
     <Stage
       height={height}
       width={width}
+      options={{
+        backgroundAlpha: 0
+      }}
     >
       {zones}
     </Stage>
