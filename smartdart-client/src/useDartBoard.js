@@ -37,13 +37,6 @@ export const useDartBoard = () => {
   }
 }
 
-const multiplierMapper = {
-  1: Multiplier.SINGLE_SLIM,
-  2: Multiplier.DOUBLE,
-  0: Multiplier.SINGLE_FAT,
-  3: Multiplier.TRIPLE,
-}
-
 const connectToDartBoard = async ({ onConnected, onDartLanding, onButtonPress }) => {
   try {
     const device = await navigator.bluetooth.requestDevice({
@@ -71,15 +64,21 @@ const connectToDartBoard = async ({ onConnected, onDartLanding, onButtonPress })
     notification.addEventListener(
       "characteristicvaluechanged",
       () => {
+        const multiplierMapper = Object.values(Multiplier)
+
         const { value } = event.target;
-        var dart = {
-          score: value.getUint8(0),
-          multiplier: multiplierMapper[value.getUint8(1)],
-        };
-        if (dart.multiplier == 170 && dart.score == 85) {
+        const score = value.getUint8(0)
+        const multiplier = value.getUint8(1)
+
+
+        if (multiplier == 170 && score == 85) {
           onButtonPress();
           console.log("button pressed");
         } else {
+          const dart = {
+            score,
+            multiplier: multiplierMapper[multiplier],
+          };
           onDartLanding(dart);
           console.log({ dart });
         }

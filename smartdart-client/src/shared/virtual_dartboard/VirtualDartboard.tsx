@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { Stage, Graphics } from '@pixi/react';
+import { PointData } from 'pixi.js';
 import { Multiplier, Zone, Hit } from '../../types'
 import '@pixi/events';
 
@@ -33,8 +34,12 @@ const BOARD = [
   20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5,
 ];
 
-function polarToCartesian(radius, angleInRadians, center) {
-  // const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+type polarToCartesianFn = (
+  radius: number,
+  angleInRadians: number,
+  center: PointData
+) => PointData
+const polarToCartesian: polarToCartesianFn = (radius, angleInRadians, center) => {
   return {
     x: center.x + radius * Math.cos(angleInRadians),
     y: center.x + radius * Math.sin(angleInRadians),
@@ -71,7 +76,6 @@ type ZoneComponentProps = {
   onZoneBeenHit: (hit: Hit) => void,
   scale: number
 }
-
 const ZoneComponent = ({
   zone: { index, multiplier },
   hits,

@@ -1,8 +1,10 @@
+// careful ! the order is important !
+// RF: multiplierMapper
 export enum Multiplier {
-  'SINGLE_SLIM' = 'SINGLE_SLIM',
-  'TRIPLE' = 'TRIPLE',
   'SINGLE_FAT' = 'SINGLE_FAT',
+  'SINGLE_SLIM' = 'SINGLE_SLIM',
   'DOUBLE' = 'DOUBLE',
+  'TRIPLE' = 'TRIPLE',
 }
 
 export type Hit = {

@@ -67,7 +67,7 @@ export const useSocket: UseSocketFn = (
     socket.on(CHANNEL_NAME, (event: ActionPayloadEvent) => {
       const { action } = event
       const [, target] = action.split(NAMESPACE_SEPARATOR)
-      // *:ACTION_NAME or TARGET_A/TARGET_B:ACTION_NAME or simply TARGET:ACTION_NAME
+
       if (target === namespace) {
         setEvents(prev => {
           return [...prev, event]

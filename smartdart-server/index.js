@@ -76,7 +76,14 @@ io.on('connection', (socket) => {
         payload
       }
       console.log(`emits to ${target} -> `, formattedEvent)
-      sockets[target].emit(CHANNEL_NAME, formattedEvent)
+
+      const socket = sockets[target]
+
+      if (socket) {
+        socket.emit(CHANNEL_NAME, formattedEvent)
+      } else {
+        console.error(`the socket "${target}" is not registered`)
+      }
     })
   }
 
@@ -141,6 +148,8 @@ io.on('connection', (socket) => {
 
   socket.on(CHANNEL_NAME, handleNewMessage)
 });
+
+
 
 server.listen(BACKEND_PORT, SERVER_HOST, () => {
   console.log(`Server running on port ${SERVER_HOST}:${BACKEND_PORT}`);
