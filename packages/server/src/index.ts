@@ -3,10 +3,12 @@ import { createServer } from "http";
 import { Server, Socket } from "socket.io";
 import cors from "cors";
 import {
+  CHANNEL_NAME,
   ClientToServerEvents,
   InterServerEvents,
   ServerToClientEvents,
   SocketData,
+  SocketEvent,
 } from "./types/socketio";
 
 const app = express();
@@ -38,7 +40,6 @@ const BACKEND_PORT = 8080;
 // Use CORS middleware for Express
 app.use(cors(CORS_SETTINGS));
 
-const CHANNEL_NAME = "SYSTEM";
 const NAMESPACE_SEPARATOR = ":";
 
 const receiver = "Controller";
@@ -91,7 +92,7 @@ io.on("connection", (socket) => {
     });
   };
 
-  function handleNewMessage(event) {
+  function handleNewMessage(event: SocketEvent) {
     console.log("receives <- ", event);
 
     const { action, payload } = event;

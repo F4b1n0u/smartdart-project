@@ -1,11 +1,14 @@
+export const CHANNEL_NAME = "SYSTEM";
+
+export type SocketEvent = { action: string; payload: any };
+
 export interface ServerToClientEvents {
   noArg: () => void;
-  basicEmit: (a: number, b: string, c: Buffer) => void;
-  withAck: (d: string, callback: (e: number) => void) => void;
+  [CHANNEL_NAME]: (event: SocketEvent) => void;
 }
 
 export interface ClientToServerEvents {
-  hello: () => void;
+  [CHANNEL_NAME]: (event: any) => void;
 }
 
 export interface InterServerEvents {
