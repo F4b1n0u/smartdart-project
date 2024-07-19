@@ -1,24 +1,16 @@
 import { Socket } from "socket.io";
+import { Entity, SocketEvent } from "@shared/types/socketio";
 
 export const CHANNEL_NAME = "SYSTEM";
 
-export enum TARGETS {
-  Dartboard = "Dartboard",
-  MainScreen = "MainScreen",
-  ThrowManager = "ThrowManager",
-  PlayerInput = "PlayerInput",
-}
-
 export type Sockets = Partial<{
-  [key in TARGETS]: Socket<
+  [key in Entity]: Socket<
     ClientToServerEvents,
     ServerToClientEvents,
     InterServerEvents,
     SocketData
   >;
 }>;
-
-export type SocketEvent = { action: string; payload: any };
 
 export interface ServerToClientEvents {
   noArg: () => void;

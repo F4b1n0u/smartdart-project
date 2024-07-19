@@ -8,11 +8,10 @@ import {
   InterServerEvents,
   ServerToClientEvents,
   SocketData,
-  SocketEvent,
   Sockets,
-  TARGETS,
 } from "./types/socketio";
 import { BACKEND_PORT, CLIENT_HOST, CLIENT_PORT, SERVER_HOST } from "./config";
+import { Entity, SocketEvent } from "@shared/types/socketio";
 
 const app = express();
 const httpServer = createServer(app);
@@ -46,9 +45,9 @@ io.on("connection", (socket) => {
 
   console.log("Incoming connection from: ", emitter);
 
-  sockets[emitter as keyof typeof TARGETS] = socket;
+  sockets[emitter as keyof typeof Entity] = socket;
 
-  const emit = (target: TARGETS | TARGETS[], topic: string, payload: any) => {
+  const emit = (target: Entity | Entity[], topic: string, payload: any) => {
     let targets = target;
     if (!Array.isArray(target)) {
       targets = [target];
@@ -61,7 +60,7 @@ io.on("connection", (socket) => {
       };
       console.log(`emits to ${target} -> `, formattedEvent);
 
-      const socket = sockets[target as TARGETS];
+      const socket = sockets[target as Entity];
 
       if (socket) {
         socket.emit(CHANNEL_NAME, formattedEvent);
@@ -82,23 +81,23 @@ io.on("connection", (socket) => {
     }
 
     switch (source) {
-      case TARGETS.Dartboard: {
+      case Entity.Dartboard: {
         break;
       }
-      case TARGETS.PlayerInput: {
-        emit(TARGETS.ThrowManager, topic, payload);
+      case Entity.PlayerInput: {
+        emit(Entity.ThrowManager, topic, payload);
         break;
       }
-      case TARGETS.ThrowManager: {
+      case Entity.ThrowManager: {
         switch (topic) {
           case "DART_MISS": {
-            emit([TARGETS.MainScreen, TARGETS.ThrowManager], topic, payload);
+            emit([Entity.MainScreen, Entity.ThrowManager], topic, payload);
             break;
           }
 
           case "SIMULATE_DART_LANDED": {
             emit(
-              [TARGETS.MainScreen, TARGETS.ThrowManager],
+              [Entity.MainScreen, Entity.ThrowManager],
               "DART_LANDED",
               payload
             );
@@ -108,17 +107,17 @@ io.on("connection", (socket) => {
 
         break;
       }
-      case TARGETS.MainScreen: {
+      case Entity.MainScreen: {
         break;
       }
-      case TARGETS.Dartboard: {
+      case Entity.Dartboard: {
         switch (topic) {
           case "CONNECTED": {
-            emit(TARGETS.Dartboard, "CONNECTED_ACK", payload);
+            emit(Entity.Dartboard, "CONNECTED_ACK", payload);
             break;
           }
           case "DART_LANDED": {
-            emit([TARGETS.MainScreen, TARGETS.ThrowManager], topic, payload);
+            emit([Entity.MainScreen, Entity.ThrowManager], topic, payload);
           }
         }
       }

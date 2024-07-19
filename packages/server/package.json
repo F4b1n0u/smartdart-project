@@ -9,7 +9,7 @@
     "socket.io": "^4.7.5"
   },
   "scripts": {
-    "start": "dotenvx run -- ts-node src/index.ts",
+    "start": "dotenvx run -- ts-node -r tsconfig-paths/register src/index.ts",
     "start:dev": "dotenvx run -- nodemon",
     "lint": "eslint"
   },
@@ -20,6 +20,7 @@
     "globals": "^15.8.0",
     "nodemon": "^3.1.4",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.5.3",
     "typescript-eslint": "^7.16.1"
   }
