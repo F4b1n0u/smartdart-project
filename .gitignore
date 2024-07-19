@@ -1,8 +1,8 @@
 # compiled output
 /dist
 /node_modules
-/smartdart-client/node_modules
-/smartdart-server/node_modules
+packages/**/node_modules
+packages/**/node_modules
 
 # Logs
 logs
