@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import VirtualDartboard from '../shared/virtual_dartboard/VirtualDartboard'
 import { Hit } from '../types'
 import { useSocket } from '../useSocket'

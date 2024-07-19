@@ -3,7 +3,7 @@ import { useDartBoard } from '../../useDartBoard'
 import VirtualDartboard, { touchableRadiiPercents } from '../../shared/virtual_dartboard/VirtualDartboard'
 import { useCallback } from 'react'
 
-const namespace = 'ThrowManager'
+const namespace = 'ControlScreen'
 
 function ThrowManager() {
   const { emit, emitHandler, events } = useSocket(namespace)

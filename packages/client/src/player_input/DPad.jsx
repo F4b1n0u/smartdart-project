@@ -1,5 +1,4 @@
 // client/src/components/DPad.js
-import React from 'react';
 import styled from 'styled-components';
 
 const DPadContainer = styled.div`

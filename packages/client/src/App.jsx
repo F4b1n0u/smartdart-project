@@ -1,7 +1,7 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import MainScreen from './main_screen/MainScreen';
-import SecondaryScreen from './secondary_screen/SecondaryScreen';
+import ControlScreen from './control_screen/ControlScreen';
 import PlayerInput from './player_input/PlayerInput';
 
 const App = () => {
@@ -9,7 +9,7 @@ const App = () => {
     <Router>
       <Switch>
         <Route path="/MainScreen" component={MainScreen} />
-        <Route path="/SecondaryScreen" component={SecondaryScreen} />
+        <Route path="/ControlScreen" component={ControlScreen} />
         <Route path="/PlayerInput" component={PlayerInput} />
       </Switch>
     </Router>

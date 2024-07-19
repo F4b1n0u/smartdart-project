@@ -38,6 +38,26 @@ app.use(cors(CORS_SETTINGS));
 
 const NAMESPACE_SEPARATOR = ":";
 const receiver = "Controller";
+<<<<<<< Updated upstream
+=======
+
+enum TARGETS {
+  Dartboard = "Dartboard",
+  MainScreen = "MainScreen",
+  ControlScreen = "ControlScreen",
+  PlayerInput = "PlayerInput",
+}
+
+type Sockets = Partial<{
+  [key in TARGETS]: Socket<
+    ClientToServerEvents,
+    ServerToClientEvents,
+    InterServerEvents,
+    SocketData
+  >;
+}>;
+
+>>>>>>> Stashed changes
 const sockets: Sockets = {};
 
 io.on("connection", (socket) => {
@@ -81,11 +101,16 @@ io.on("connection", (socket) => {
     }
 
     switch (source) {
+<<<<<<< Updated upstream
       case Entity.Dartboard: {
         break;
       }
       case Entity.PlayerInput: {
         emit(Entity.ThrowManager, topic, payload);
+=======
+      case TARGETS.PlayerInput: {
+        emit(TARGETS.ThrowManager, topic, payload);
+>>>>>>> Stashed changes
         break;
       }
       case Entity.ThrowManager: {

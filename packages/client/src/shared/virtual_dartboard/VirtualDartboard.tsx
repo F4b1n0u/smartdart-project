@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Stage, Graphics } from '@pixi/react';
 import { PointData } from 'pixi.js';
 import { Multiplier, Zone, Hit } from '../../types'

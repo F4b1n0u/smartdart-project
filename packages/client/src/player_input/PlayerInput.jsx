@@ -1,4 +1,3 @@
-import React from 'react';
 import { useSocket } from '../useSocket';
 import { DPad } from './DPad';
 
