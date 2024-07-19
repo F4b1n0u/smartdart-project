@@ -1,6 +1,6 @@
 import express from "express";
 import { createServer } from "http";
-import { Server, Socket } from "socket.io";
+import { Server } from "socket.io";
 import cors from "cors";
 import {
   CHANNEL_NAME,
@@ -9,14 +9,13 @@ import {
   ServerToClientEvents,
   SocketData,
   SocketEvent,
+  Sockets,
+  TARGETS,
 } from "./types/socketio";
+import { BACKEND_PORT, CLIENT_HOST, CLIENT_PORT, SERVER_HOST } from "./config";
 
 const app = express();
 const httpServer = createServer(app);
-
-const SERVER_HOST = "0.0.0.0";
-const CLIENT_HOST = process.env.HOST || "localhost";
-const CLIENT_PORT = 5173;
 
 const CORS_SETTINGS = {
   origin: `http://${CLIENT_HOST}:${CLIENT_PORT}`,
@@ -35,31 +34,11 @@ const io = new Server<
   },
 });
 
-const BACKEND_PORT = 8080;
-
 // Use CORS middleware for Express
 app.use(cors(CORS_SETTINGS));
 
 const NAMESPACE_SEPARATOR = ":";
-
 const receiver = "Controller";
-
-enum TARGETS {
-  Dartboard = "Dartboard",
-  MainScreen = "MainScreen",
-  ThrowManager = "ThrowManager",
-  PlayerInput = "PlayerInput",
-}
-
-type Sockets = Partial<{
-  [key in TARGETS]: Socket<
-    ClientToServerEvents,
-    ServerToClientEvents,
-    InterServerEvents,
-    SocketData
-  >;
-}>;
-
 const sockets: Sockets = {};
 
 io.on("connection", (socket) => {
