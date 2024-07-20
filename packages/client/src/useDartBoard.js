@@ -1,13 +1,12 @@
 import { useCallback, useState } from 'react'
 import { useSocket } from './useSocket'
 import { Multiplier } from './types'
-
-const namespace = 'Dartboard'
+import { Entity } from '@shared/types'
 
 export const useDartBoard = () => {
   const [isConnected, setIsconnected] = useState(false)
   
-  const { events: hits, emit } = useSocket(namespace, ({ action }) => {
+  const { events: hits, emit } = useSocket(Entity.Dartboard, ({ action }) => {
     const [, , topic] = action.split(':')
     if (topic === 'CONNECTED_ACK') {
       setIsconnected(true)

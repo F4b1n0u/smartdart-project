@@ -5,9 +5,9 @@ import { useSocket } from '../useSocket'
 
 const position = { x: 400, y: 400 }
 
-const namespace = 'MainScreen'
+const namespace = 'DisplayScreen'
 
-const MainScreen = () => {
+const DisplayScreen = () => {
   const [hits, seHits] = useState<Array<Hit>>([])
 
   const { events } = useSocket(namespace, ({ action, payload }) => {
@@ -39,4 +39,4 @@ const MainScreen = () => {
   )
 }
 
-export default MainScreen
+export default DisplayScreen

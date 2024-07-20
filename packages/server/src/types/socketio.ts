@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { Entity, SocketEvent } from "@shared/types/socketio";
+import { Entity, Event } from "@shared/types";
 
 export const CHANNEL_NAME = "SYSTEM";
 
@@ -14,7 +14,7 @@ export type Sockets = Partial<{
 
 export interface ServerToClientEvents {
   noArg: () => void;
-  [CHANNEL_NAME]: (event: SocketEvent) => void;
+  [CHANNEL_NAME]: (event: Event) => void;
 }
 
 export interface ClientToServerEvents {

@@ -1,33 +1,34 @@
 # smartdart-project
 
-## 1 - server
-
-`cd smartdart-server`
+## install
 
 `npm install`
 
-`node index.js`
+## how to start
 
-## 2 - client
+### 1 - server
 
-`cd smartdart-client`
+`cd server`
+`npm run start:dev`
 
-`npm install`
+### 2 - client
 
+`cd client`
 `npm run dev`
 
-## 3 clients
-### Main Screen
-`open http://localhost:5173/MainScreen`
+### open browsers
+
+### display screen
+`open http://localhost:5173/display-screen`
 This is mostly to display a feedback of what is happening on the real dartboard and the state of the current game (score, current player and whatnot)
 
-### Secondary Screen
-`open http://localhost:5173/SecondaryScreen`
+### control Screen
+`open http://localhost:5173/control-screen`
 This is mostly for the user to be able to interact with the system
 - connect to a real dartbaord
 - simulate throw (press a zone)
 - notify the game of a miss
 
 ### Player Input
-`open http://localhost:5173/PlayerInput`
+`open http://localhost:5173/player-input`
 This is to allow asymetric gaming, to give the player that are not throwing some interaction in the system

@@ -15,7 +15,7 @@ type EmitHandlerFn = (
   payload: ActionPayloadEvent['payload']
 ) => EmitFn
 type UseSocketFn = (
-  namespace: string,
+  socketId: string,
   onGameControllerUpdate: (event: ActionPayloadEvent, cb: EmitFn) => void
 ) => {
   emitHandler: EmitHandlerFn,
@@ -24,7 +24,7 @@ type UseSocketFn = (
 }
 
 export const useSocket: UseSocketFn = (
-  namespace,
+  socketId,
   onGameControllerUpdate = () => {}
 ) => {
   const socket = useMemo(() => io(`http://${SOCKET_IO_HOST}:${SOCKET_IO_PORT}`, {
@@ -32,9 +32,9 @@ export const useSocket: UseSocketFn = (
       // rejectUnauthorized: false, // Use this only for self-signed certificates
       // withCredentials: true,
       query: {
-        namespace
+        socketId
       }
-    }), [namespace])
+    }), [socketId])
 
   const [events, setEvents] = useState<Array<ActionPayloadEvent>>([]);
 
@@ -43,13 +43,13 @@ export const useSocket: UseSocketFn = (
     socket.emit(
       CHANNEL_NAME, {
         action: [
-          namespace,
+          socketId,
           'Controller',
           topic
         ].join(NAMESPACE_SEPARATOR),
         payload
       })
-  }, [namespace, socket])
+  }, [socketId, socket])
 
   const emitHandler: EmitHandlerFn = useCallback((action, payload) => () => {
     emit(action, payload)
@@ -66,9 +66,9 @@ export const useSocket: UseSocketFn = (
   useEffect(() => {
     socket.on(CHANNEL_NAME, (event: ActionPayloadEvent) => {
       const { action } = event
-      const [, target] = action.split(NAMESPACE_SEPARATOR)
+      const [, receiverId] = action.split(NAMESPACE_SEPARATOR)
 
-      if (target === namespace) {
+      if (receiverId === socketId) {
         setEvents(prev => {
           return [...prev, event]
         });
@@ -79,7 +79,7 @@ export const useSocket: UseSocketFn = (
     return () => {
       socket.off(CHANNEL_NAME);
     };
-  }, [namespace, onGameControllerUpdate, emit, socket]);
+  }, [socketId, onGameControllerUpdate, emit, socket]);
 
   return {
     emitHandler,

@@ -1,4 +1,4 @@
-export enum MainScreenEvent {
+export enum DisplayScreenEvent {
   ADD_PLAYER = 'ADD_PLAYER',
   UPDATE_PLAYER = 'UPDATE_PLAYER',
   REMOVE_PLAYER = 'REMOVE_PLAYER'

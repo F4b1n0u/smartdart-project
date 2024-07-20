@@ -11,7 +11,7 @@ import {
   Sockets,
 } from "./types/socketio";
 import { BACKEND_PORT, CLIENT_HOST, CLIENT_PORT, SERVER_HOST } from "./config";
-import { Entity, SocketEvent } from "@shared/types/socketio";
+import { Entity, Event } from "@shared/types";
 
 const app = express();
 const httpServer = createServer(app);
@@ -38,34 +38,14 @@ app.use(cors(CORS_SETTINGS));
 
 const NAMESPACE_SEPARATOR = ":";
 const receiver = "Controller";
-<<<<<<< Updated upstream
-=======
-
-enum TARGETS {
-  Dartboard = "Dartboard",
-  MainScreen = "MainScreen",
-  ControlScreen = "ControlScreen",
-  PlayerInput = "PlayerInput",
-}
-
-type Sockets = Partial<{
-  [key in TARGETS]: Socket<
-    ClientToServerEvents,
-    ServerToClientEvents,
-    InterServerEvents,
-    SocketData
-  >;
-}>;
-
->>>>>>> Stashed changes
 const sockets: Sockets = {};
 
 io.on("connection", (socket) => {
-  const { namespace: emitter } = socket.handshake.query;
+  const { socketId: emitterId } = socket.handshake.query;
 
-  console.log("Incoming connection from: ", emitter);
+  console.log("Incoming connection from: ", emitterId);
 
-  sockets[emitter as keyof typeof Entity] = socket;
+  sockets[emitterId as keyof typeof Entity] = socket;
 
   const emit = (target: Entity | Entity[], topic: string, payload: any) => {
     let targets = target;
@@ -90,7 +70,7 @@ io.on("connection", (socket) => {
     });
   };
 
-  function handleNewMessage(event: SocketEvent) {
+  function handleNewMessage(event: Event) {
     console.log("receives <- ", event);
 
     const { action, payload } = event;
@@ -101,28 +81,20 @@ io.on("connection", (socket) => {
     }
 
     switch (source) {
-<<<<<<< Updated upstream
-      case Entity.Dartboard: {
-        break;
-      }
       case Entity.PlayerInput: {
-        emit(Entity.ThrowManager, topic, payload);
-=======
-      case TARGETS.PlayerInput: {
-        emit(TARGETS.ThrowManager, topic, payload);
->>>>>>> Stashed changes
+        emit(Entity.ControlScreen, topic, payload);
         break;
       }
-      case Entity.ThrowManager: {
+      case Entity.ControlScreen: {
         switch (topic) {
           case "DART_MISS": {
-            emit([Entity.MainScreen, Entity.ThrowManager], topic, payload);
+            emit([Entity.DisplayScreen, Entity.ControlScreen], topic, payload);
             break;
           }
 
           case "SIMULATE_DART_LANDED": {
             emit(
-              [Entity.MainScreen, Entity.ThrowManager],
+              [Entity.DisplayScreen, Entity.ControlScreen],
               "DART_LANDED",
               payload
             );
@@ -132,7 +104,7 @@ io.on("connection", (socket) => {
 
         break;
       }
-      case Entity.MainScreen: {
+      case Entity.DisplayScreen: {
         break;
       }
       case Entity.Dartboard: {
@@ -142,7 +114,7 @@ io.on("connection", (socket) => {
             break;
           }
           case "DART_LANDED": {
-            emit([Entity.MainScreen, Entity.ThrowManager], topic, payload);
+            emit([Entity.DisplayScreen, Entity.ControlScreen], topic, payload);
           }
         }
       }
