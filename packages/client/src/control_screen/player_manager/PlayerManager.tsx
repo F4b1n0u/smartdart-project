@@ -2,7 +2,8 @@ import { useState, useCallback, useRef } from 'react';
 import styled from 'styled-components';
 import PlayerComponent from './Player';
 import Webcam from 'react-webcam';
-import { Player } from '../../../../shared/src/types';
+import { Entity, Player } from '../../../../shared/src/types';
+import { useSocketState } from '../../shared/useSocketState';
 
 const PlayerManagementWrapper = styled.div`
   display: flex;
@@ -44,16 +45,19 @@ const WebcamContainer = styled.div`
 const initialPlayersData: Array<Player> = [];
 
 const usePlayerManager = () => {
-  const [players, setPlayers] = useState<Array<Player>>(initialPlayersData);
+
+  // TODO add a useSocket at the root of every client and rely on it to avoid to have to pass down the entity every time
+  const { state, update: updatePlayers } = useSocketState<Array<Player>>(Entity.CONTROL_SCREEN, 'players')
+  const players = state || []
 
   const addPlayer = useCallback(({ name, photo }: Omit<Player, 'id'>) => {
     if (name.trim() && photo) {
-      setPlayers([...players, { id: players.length + 1, name, photo }]);
+      updatePlayers([...players, { id: players.length + 1, name, photo }]);
     }
-  }, [setPlayers, players]);
+  }, [updatePlayers, players]);
 
   const removePlayer = (id: number) => {
-    setPlayers(players.filter(player => player.id !== id));
+    updatePlayers(players.filter(player => player.id !== id));
   };
 
   return {

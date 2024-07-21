@@ -12,6 +12,7 @@ import {
 } from "./types/socketio";
 import { PORT_EXPRESS, PORT_SOCKET_IO , HOST_CORS } from "./config";
 import { Entity, Event } from "@shared/types";
+import { set } from 'lodash'
 
 const app = express();
 const httpServer = createServer(app);
@@ -41,13 +42,21 @@ const receiver = "Controller";
 const sockets: Sockets = {};
 
 io.on("connection", (socket) => {
+  // TODO handle this much better than that !
+  let state = {}
+
+  const updateState = (path: string, value: unknown) => {
+    state = set(state, path, value)
+    emit([Entity.CONTROL_SCREEN, Entity.DISPLAY_SCREEN, Entity.PLAYER_INPUT], 'STATE_UPDATE', state)
+  }
+
   const { socketId: emitterId } = socket.handshake.query;
 
   console.log("Incoming connection from: ", emitterId);
 
   sockets[emitterId as keyof typeof Entity] = socket;
 
-  const emit = (target: Entity | Entity[], topic: string, payload: any) => {
+  const emit = (target: Entity | Entity[], topic: string, payload: unknown) => {
     let targets = target;
     if (!Array.isArray(target)) {
       targets = [target];
@@ -78,6 +87,14 @@ io.on("connection", (socket) => {
 
     if (target !== receiver) {
       return;
+    }
+
+    if (topic === 'UPDATE_STATE') {
+      const {
+        path,
+        value
+      } = payload
+      updateState(path, value)
     }
 
     switch (source) {
