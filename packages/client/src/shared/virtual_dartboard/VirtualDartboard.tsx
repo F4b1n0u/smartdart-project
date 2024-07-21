@@ -152,7 +152,7 @@ const ZoneComponent = ({
 
 type VirtualDartboardProps = {
   center: Position,
-  hits: Array<Hit>,
+  hits?: Array<Hit>,
   onZoneBeenHit?: (dart: Dart) => void,
   radiiPercents?: RadiiPercents,
   height: number,

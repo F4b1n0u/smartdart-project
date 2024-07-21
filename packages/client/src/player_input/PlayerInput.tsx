@@ -3,7 +3,7 @@ import { DPad } from './DPad';
 import { Entity } from '../../../shared/src/types'
 
 function PlayerInput() {
-  const { emitHandler, eventLog } = useSocket(Entity.PLAYER_INPUT)
+  const { emitHandler, events } = useSocket(Entity.PLAYER_INPUT)
 
   return (
     <div>
@@ -14,9 +14,9 @@ function PlayerInput() {
         onLeft={emitHandler('DPAD_PRESSED', 'LEFT')}
         onRight={emitHandler('DPAD_PRESSED', 'RIGHT')}
       />
-     
+
       <ul>
-        {eventLog.map((event, index) => (
+        {events.map((event, index) => (
           <li key={index}>{JSON.stringify(event)}</li>
         ))}
       </ul>

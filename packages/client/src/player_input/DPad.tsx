@@ -49,7 +49,14 @@ const Button = styled.button`
   }
 `;
 
-export const DPad = ({ onUp, onDown, onLeft, onRight }) => {
+type DpadProps = {
+  onUp: () => void,
+  onDown: () => void,
+  onLeft: () => void,
+  onRight: () => void
+}
+
+export const DPad = ({ onUp, onDown, onLeft, onRight }: DpadProps) => {
   return (
     <DPadContainer>
       <Button className="up" onClick={onUp}>up</Button>

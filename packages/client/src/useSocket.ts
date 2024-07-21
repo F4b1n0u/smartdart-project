@@ -14,7 +14,7 @@ type EmitFn = (topic: string, payload?: any) => void
 type EmitHandlerFn = (
   action: ActionPayloadEvent['action'],
   payload?: ActionPayloadEvent['payload']
-) => EmitFn
+) => () => void
 type UseSocketFn = (
   socketId: Entity,
   onEvent?: (event: ActionPayloadEvent, cb: EmitFn) => void
