@@ -1,7 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import styled from 'styled-components';
 import Player from './Player';
-import CameraView from './CameraView';
+import Webcam from 'react-webcam';
 
 const PlayerManagementWrapper = styled.div`
   display: flex;
@@ -20,25 +20,48 @@ const PlayerListWrapper = styled.div`
   flex-wrap: wrap;
   gap: 20px;
 `;
+const CameraWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
-const initialPlayersData = [
-  { id: 1, name: 'Player 1', photo: null },
-  { id: 2, name: 'Player 2', photo: null },
-  { id: 3, name: 'Player 3', photo: null },
-  { id: 4, name: 'Player 4', photo: null }
-];
+const WebcamContainer = styled.div`
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 50%;
+  margin-bottom: 10px;
+
+  & video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`;
+
+const CaptureButton = styled.button`
+  margin-top: 10px;
+`;
+
+type Player = {
+  id: number,
+  name: string,
+  photo: string
+}
+
+const initialPlayersData: Array<Player> = [];
 
 const usePlayerManager = () => {
-  const [players, setPlayers] = useState(initialPlayersData);
+  const [players, setPlayers] = useState<Array<Player>>(initialPlayersData);
 
-
-  const addPlayer = useCallback(({name, photo}) => {
+  const addPlayer = useCallback(({ name, photo }: Omit<Player, 'id'>) => {
     if (name.trim() && photo) {
       setPlayers([...players, { id: players.length + 1, name, photo }]);
     }
   }, [setPlayers, players]);
 
-  const removePlayer = (id) => {
+  const removePlayer = (id: number) => {
     setPlayers(players.filter(player => player.id !== id));
   };
 
@@ -50,9 +73,9 @@ const usePlayerManager = () => {
 }
 
 const PlayerManagement = () => {
-  usePlayerManager
+  const webcamRef = useRef<Webcam>(null);
+
   const [name, setName] = useState('');
-  const [photo, setPhoto] = useState(null);
 
   const {
     addPlayer,
@@ -60,19 +83,34 @@ const PlayerManagement = () => {
     players
   } = usePlayerManager()
 
-  const handleClickAddPhoto = useCallback(() => {
-    addPlayer({ name, photo })
-    setName('');
-    setPhoto(null);
+  const handleClickAddPlayer = useCallback(() => {
+    const photo = webcamRef.current?.getScreenshot();
+
+    if (photo) {
+      addPlayer({ name, photo })
+      setName('');  
+    }
   }, [
     name,
-    photo,
+    webcamRef.current,
     addPlayer
   ])
 
   return (
     <PlayerManagementWrapper>
-      <CameraView onCapture={setPhoto} />
+      <CameraWrapper>
+        <WebcamContainer>
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            width="200"
+            height="200"
+          />
+        </WebcamContainer>
+        {/* {capturedImage && <img src={capturedImage} alt="Captured" />} */}
+      </CameraWrapper>
+      
       <InputWrapper>
         <input
           type="text"
@@ -80,7 +118,7 @@ const PlayerManagement = () => {
           onChange={(e) => setName(e.target.value)}
           placeholder="Enter player name"
         />
-        <button onClick={handleClickAddPhoto}>Add</button>
+        <button onClick={handleClickAddPlayer}>Add</button>
       </InputWrapper>
       <PlayerListWrapper>
         {players.map(player => (

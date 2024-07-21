@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
+import { Entity } from '../../shared/src/types'
 import { useSocket } from './useSocket'
 import { Multiplier } from './types'
-import { Entity } from '@shared/types'
 
 export const useDartBoard = () => {
   const [isConnected, setIsconnected] = useState(false)
