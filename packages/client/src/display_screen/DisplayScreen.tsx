@@ -2,15 +2,15 @@ import { useState } from 'react'
 import VirtualDartboard from '../shared/virtual_dartboard/VirtualDartboard'
 import { Hit } from '../types'
 import { useSocket } from '../useSocket'
+import { Entity } from '../../../shared/src/types'
 
 const position = { x: 400, y: 400 }
 
-const namespace = 'DisplayScreen'
 
 const DisplayScreen = () => {
   const [hits, seHits] = useState<Array<Hit>>([])
 
-  const { events } = useSocket(namespace, ({ action, payload }) => {
+  const { events } = useSocket(Entity.DISPLAY_SCREEN, ({ action, payload }) => {
     const [,,topic] = action.split(':')
     switch(topic) {
       case 'DART_LANDED': {

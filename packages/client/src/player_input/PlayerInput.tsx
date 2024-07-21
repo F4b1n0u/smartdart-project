@@ -1,10 +1,9 @@
 import { useSocket } from '../useSocket';
 import { DPad } from './DPad';
-
-const namespace = 'PlayerInput'
+import { Entity } from '../../../shared/src/types'
 
 function PlayerInput() {
-  const { emitHandler, eventLog } = useSocket(namespace)
+  const { emitHandler, eventLog } = useSocket(Entity.PLAYER_INPUT)
 
   return (
     <div>

@@ -2,11 +2,11 @@ import { useSocket } from '../../useSocket'
 import { useDartBoard } from '../../useDartBoard'
 import VirtualDartboard, { touchableRadiiPercents } from '../../shared/virtual_dartboard/VirtualDartboard'
 import { useCallback } from 'react'
+import { Entity } from '../../../../shared/src/types'
 
-const namespace = 'ControlScreen'
 
 function ThrowManager() {
-  const { emit, emitHandler, events } = useSocket(namespace)
+  const { emit, emitHandler, events } = useSocket(Entity.CONTROL_SCREEN)
 
   const { hits, connect, isConnected } = useDartBoard()
 

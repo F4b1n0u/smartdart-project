@@ -1,5 +1,6 @@
 import io from 'socket.io-client';
 import { useCallback, useEffect, useState, useMemo } from 'react';
+import { Entity } from '../../shared/src/types';
 
 const CHANNEL_NAME = 'SYSTEM'
 const NAMESPACE_SEPARATOR = ':'
@@ -15,8 +16,8 @@ type EmitHandlerFn = (
   payload: ActionPayloadEvent['payload']
 ) => EmitFn
 type UseSocketFn = (
-  socketId: string,
-  onGameControllerUpdate: (event: ActionPayloadEvent, cb: EmitFn) => void
+  socketId: Entity,
+  onEvent?: (event: ActionPayloadEvent, cb: EmitFn) => void
 ) => {
   emitHandler: EmitHandlerFn,
   emit: EmitFn,
@@ -25,7 +26,7 @@ type UseSocketFn = (
 
 export const useSocket: UseSocketFn = (
   socketId,
-  onGameControllerUpdate = () => {}
+  onEvent = () => {}
 ) => {
   const socket = useMemo(() => io(`http://${SOCKET_IO_HOST}:${SOCKET_IO_PORT}`, {
       // secure: true,
@@ -72,14 +73,14 @@ export const useSocket: UseSocketFn = (
         setEvents(prev => {
           return [...prev, event]
         });
-        onGameControllerUpdate(event, emit)
+        onEvent(event, emit)
       }
     });
 
     return () => {
       socket.off(CHANNEL_NAME);
     };
-  }, [socketId, onGameControllerUpdate, emit, socket]);
+  }, [socketId, onEvent, emit, socket]);
 
   return {
     emitHandler,

@@ -6,7 +6,7 @@ import { Multiplier } from './types'
 export const useDartBoard = () => {
   const [isConnected, setIsconnected] = useState(false)
   
-  const { events: hits, emit } = useSocket(Entity.Dartboard, ({ action }) => {
+  const { events: hits, emit } = useSocket(Entity.DARTBOARD, ({ action }) => {
     const [, , topic] = action.split(':')
     if (topic === 'CONNECTED_ACK') {
       setIsconnected(true)
