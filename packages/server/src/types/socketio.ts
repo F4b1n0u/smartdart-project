@@ -3,14 +3,13 @@ import { Entity, Event } from "@shared/types";
 
 export const CHANNEL_NAME = "SYSTEM";
 
-export type Sockets = Partial<{
-  [key in Entity]: Socket<
+export type Sockets = Partial<Record<Entity, Socket<
     ClientToServerEvents,
     ServerToClientEvents,
     InterServerEvents,
     SocketData
-  >;
-}>;
+  >
+>>;
 
 export interface ServerToClientEvents {
   noArg: () => void;

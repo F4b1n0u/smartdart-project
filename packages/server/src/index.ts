@@ -10,14 +10,14 @@ import {
   SocketData,
   Sockets,
 } from "./types/socketio";
-import { BACKEND_PORT, CLIENT_HOST, CLIENT_PORT, SERVER_HOST } from "./config";
+import { PORT_EXPRESS, PORT_SOCKET_IO , HOST_CORS } from "./config";
 import { Entity, Event } from "@shared/types";
 
 const app = express();
 const httpServer = createServer(app);
 
 const CORS_SETTINGS = {
-  origin: `http://${CLIENT_HOST}:${CLIENT_PORT}`,
+  origin: `http://${HOST_CORS}:${PORT_EXPRESS}`,
   credentials: true,
 };
 
@@ -81,20 +81,20 @@ io.on("connection", (socket) => {
     }
 
     switch (source) {
-      case Entity.PlayerInput: {
-        emit(Entity.ControlScreen, topic, payload);
+      case Entity.PLAYER_INPUT: {
+        emit(Entity.CONTROL_SCREEN, topic, payload);
         break;
       }
-      case Entity.ControlScreen: {
+      case Entity.CONTROL_SCREEN: {
         switch (topic) {
           case "DART_MISS": {
-            emit([Entity.DisplayScreen, Entity.ControlScreen], topic, payload);
+            emit([Entity.DISPLAY_SCREEN, Entity.CONTROL_SCREEN], topic, payload);
             break;
           }
 
           case "SIMULATE_DART_LANDED": {
             emit(
-              [Entity.DisplayScreen, Entity.ControlScreen],
+              [Entity.DISPLAY_SCREEN, Entity.CONTROL_SCREEN],
               "DART_LANDED",
               payload
             );
@@ -104,17 +104,17 @@ io.on("connection", (socket) => {
 
         break;
       }
-      case Entity.DisplayScreen: {
+      case Entity.DISPLAY_SCREEN: {
         break;
       }
-      case Entity.Dartboard: {
+      case Entity.DARTBOARD: {
         switch (topic) {
           case "CONNECTED": {
-            emit(Entity.Dartboard, "CONNECTED_ACK", payload);
+            emit(Entity.DARTBOARD, "CONNECTED_ACK", payload);
             break;
           }
           case "DART_LANDED": {
-            emit([Entity.DisplayScreen, Entity.ControlScreen], topic, payload);
+            emit([Entity.DISPLAY_SCREEN, Entity.CONTROL_SCREEN], topic, payload);
           }
         }
       }
@@ -124,7 +124,9 @@ io.on("connection", (socket) => {
   socket.on(CHANNEL_NAME, handleNewMessage);
 });
 
-httpServer.listen(BACKEND_PORT, SERVER_HOST, () => {
-  console.log(`Server running on port ${SERVER_HOST}:${BACKEND_PORT}`);
+httpServer.listen(PORT_EXPRESS, () => {
+  console.log(`Express server running on port ${PORT_EXPRESS}`);
   console.log("CORS_SETTINGS: ", CORS_SETTINGS);
 });
+
+io.listen(PORT_SOCKET_IO)

@@ -1,4 +1,4 @@
-export const SERVER_HOST = process.env.SERVER_HOST || "0.0.0.0";
-export const CLIENT_HOST = process.env.HOST || "localhost";
-export const CLIENT_PORT = process.env.CLIENT_PORT;
-export const BACKEND_PORT = Number(process.env.BACKEND_PORT) || 8080;
+export const HOST_EXPRESS = process.env.HOST_EXPRESS || "0.0.0.0";
+export const HOST_CORS = process.env.HOST_CORS || "localhost";
+export const PORT_EXPRESS = Number(process.env.PORT_EXPRESS);
+export const PORT_SOCKET_IO = Number(process.env.PORT_SOCKET_IO) || 8080;
