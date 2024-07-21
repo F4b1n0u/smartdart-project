@@ -3,6 +3,7 @@ import { Stage, Graphics } from '@pixi/react';
 import { PointData } from 'pixi.js';
 import { Multiplier, Zone, Hit } from '../../types'
 import '@pixi/events';
+import { Dart } from '../../../../shared/src/types';
 
 const totalSegments = 20;
 const multipliers = Object.values(Multiplier);
@@ -17,16 +18,16 @@ export type ColorMapping = {
 }
 const colorMapping: ColorMapping = {
   even: {
-    [Multiplier.SINGLE_SLIM]: 'black',
-    [Multiplier.TRIPLE]: 'red',
-    [Multiplier.SINGLE_FAT]: 'black',
-    [Multiplier.DOUBLE]: 'red',
-  },
-  odd: {
     [Multiplier.SINGLE_SLIM]: 'white',
     [Multiplier.TRIPLE]: 'blue',
     [Multiplier.SINGLE_FAT]: 'white',
     [Multiplier.DOUBLE]: 'blue',
+  },
+  odd: {
+    [Multiplier.SINGLE_SLIM]: 'black',
+    [Multiplier.TRIPLE]: 'red',
+    [Multiplier.SINGLE_FAT]: 'black',
+    [Multiplier.DOUBLE]: 'red',
   },
 };
 const segmentAngle = 360 / totalSegments; // Each segment covers 18 degrees
@@ -152,7 +153,7 @@ const ZoneComponent = ({
 type VirtualDartboardProps = {
   center: Position,
   hits: Array<Hit>,
-  onZoneBeenHit?: () => void,
+  onZoneBeenHit?: (dart: Dart) => void,
   radiiPercents?: RadiiPercents,
   height: number,
   width: number

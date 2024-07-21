@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Player } from '../../../../shared/src/types';
 
 const CardWrapper = styled.div`
   display: flex;
@@ -19,7 +20,12 @@ const Photo = styled.img`
   object-fit: cover;
 `;
 
-const Player = ({ player, removePlayer }) => {
+type PlayerProps = {
+  player: Player,
+  removePlayer: (playerId: number) => void
+}
+
+const PlayerComponent = ({ player, removePlayer }: PlayerProps) => {
   return (
     <CardWrapper>
       <Photo src={player.photo || 'photo'} alt="Player" />
@@ -29,4 +35,4 @@ const Player = ({ player, removePlayer }) => {
   );
 };
 
-export default Player;
+export default PlayerComponent;

@@ -13,7 +13,7 @@ export type ActionPayloadEvent = { action: string, payload?: any }
 type EmitFn = (topic: string, payload?: any) => void
 type EmitHandlerFn = (
   action: ActionPayloadEvent['action'],
-  payload: ActionPayloadEvent['payload']
+  payload?: ActionPayloadEvent['payload']
 ) => EmitFn
 type UseSocketFn = (
   socketId: Entity,

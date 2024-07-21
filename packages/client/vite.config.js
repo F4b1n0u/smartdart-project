@@ -8,9 +8,10 @@ export default defineConfig({
   }, 
   plugins: [
     react(),
-    tsconfigPaths()
+    tsconfigPaths({
+      projects: [
+        '../../'
+      ]
+    })
    ],
-   resolve: {
-    '@shared': '../packages/shared/src'
-   }
 })

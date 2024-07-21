@@ -1,7 +1,8 @@
 import { useState, useCallback, useRef } from 'react';
 import styled from 'styled-components';
-import Player from './Player';
+import PlayerComponent from './Player';
 import Webcam from 'react-webcam';
+import { Player } from '../../../../shared/src/types';
 
 const PlayerManagementWrapper = styled.div`
   display: flex;
@@ -39,16 +40,6 @@ const WebcamContainer = styled.div`
     object-fit: cover;
   }
 `;
-
-const CaptureButton = styled.button`
-  margin-top: 10px;
-`;
-
-type Player = {
-  id: number,
-  name: string,
-  photo: string
-}
 
 const initialPlayersData: Array<Player> = [];
 
@@ -122,7 +113,7 @@ const PlayerManagement = () => {
       </InputWrapper>
       <PlayerListWrapper>
         {players.map(player => (
-          <Player
+          <PlayerComponent
             key={player.id}
             player={player}
             removePlayer={removePlayer}

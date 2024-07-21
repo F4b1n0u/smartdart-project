@@ -19,3 +19,10 @@ export type Dart = {
   multiplier: Multiplier
 }
 
+export type Hit = Dart
+
+export type Player = {
+  id: number,
+  name: string,
+  photo: string
+}

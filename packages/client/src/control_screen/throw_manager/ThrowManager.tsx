@@ -2,7 +2,7 @@ import { useSocket } from '../../useSocket'
 import { useDartBoard } from '../../useDartBoard'
 import VirtualDartboard, { touchableRadiiPercents } from '../../shared/virtual_dartboard/VirtualDartboard'
 import { useCallback } from 'react'
-import { Entity } from '../../../../shared/src/types'
+import { Entity, Dart } from '../../../../shared/src/types'
 
 
 function ThrowManager() {
@@ -10,8 +10,8 @@ function ThrowManager() {
 
   const { hits, connect, isConnected } = useDartBoard()
 
-  const handleHitZoneSelected = useCallback(hit => {
-    emit('SIMULATE_DART_LANDED', hit)
+  const handleHitZoneSelected = useCallback((dart: Dart) => {
+    emit('SIMULATE_DART_LANDED', dart)
   }, [emit])
 
   return (
