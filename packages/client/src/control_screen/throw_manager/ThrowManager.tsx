@@ -2,7 +2,7 @@ import { useSocket } from '../../useSocket'
 import { useDartBoard } from '../../useDartBoard'
 import VirtualDartboard, { touchableRadiiPercents } from '../../shared/virtual_dartboard/VirtualDartboard'
 import { useCallback } from 'react'
-import { Entity, Dart } from '../../../../shared/src/types'
+import { Entity, Dart } from '../../../../shared/src/types/common'
 
 
 function ThrowManager() {

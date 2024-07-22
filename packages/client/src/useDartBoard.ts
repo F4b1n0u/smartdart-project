@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { Entity, Dart } from '../../shared/src/types'
+import { Entity, Throw } from '../../shared/src/types/common'
 import { useSocket } from './useSocket'
 import { Multiplier } from './types'
 
@@ -19,8 +19,8 @@ export const useDartBoard = () => {
       onConnected: () => {
         emit('CONNECTED')
       },
-      onDartLanding: (dart: Dart) => {
-        emit('DART_LANDED', dart)
+      onDartLanding: (hit: Throw) => {
+        emit('REGISTER_THROW', hit)
       },
       onButtonPress: () => emit('BUTTON_PRESSED'),
     })

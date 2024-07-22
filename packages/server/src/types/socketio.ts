@@ -1,26 +1,27 @@
 import { Socket } from "socket.io";
-import { Entity, Event } from "@shared/types";
+import { Entity } from "../../../shared/src/types/common";
+import { ServerToClientEvent, ClientToServerEvents } from '../../../shared/src/types/event'
+import { CHANNEL_NAME } from "../../../shared/src/constants";
 
-export const CHANNEL_NAME = "SYSTEM";
+export type SmartdartSocket = Socket<
+  ClientToServerMessages,
+  ServerToClientMessages,
+  InterServerMessages,
+  SocketData
+>
 
-export type Sockets = Partial<Record<Entity, Socket<
-    ClientToServerEvents,
-    ServerToClientEvents,
-    InterServerEvents,
-    SocketData
-  >
->>;
+export type Sockets = Partial<Record<Entity, SmartdartSocket >>;
 
-export interface ServerToClientEvents {
+export interface ServerToClientMessages {
   noArg: () => void;
-  [CHANNEL_NAME]: (event: Event) => void;
+  [CHANNEL_NAME]: (event: ServerToClientEvent) => void;
 }
 
-export interface ClientToServerEvents {
-  [CHANNEL_NAME]: (event: any) => void;
+export interface ClientToServerMessages {
+  [CHANNEL_NAME]: (event: ClientToServerEvents) => void;
 }
 
-export interface InterServerEvents {
+export interface InterServerMessages {
   ping: () => void;
 }
 

@@ -1,27 +1,25 @@
 import io from 'socket.io-client';
 import { useCallback, useEffect, useState, useMemo } from 'react';
-import { Entity } from '../../shared/src/types';
+import { Entity } from '../../shared/src/types/common';
+import { ClientToServerEvents, ServerToClientEvent} from '../../shared/src/types/event';
 
 const CHANNEL_NAME = 'SYSTEM'
-const NAMESPACE_SEPARATOR = ':'
 
 const SOCKET_IO_HOST = window.location.hostname
 const SOCKET_IO_PORT = 8080
 
-export type ActionPayloadEvent = { action: string, payload?: any }
-
 type EmitFn = (topic: string, payload?: any) => void
 type EmitHandlerFn = (
-  action: ActionPayloadEvent['action'],
-  payload?: ActionPayloadEvent['payload']
+  action: ClientToServerEvents['action'],
+  payload?: ClientToServerEvents['payload']
 ) => () => void
 type UseSocketFn = (
   socketId: Entity,
-  onEvent?: (event: ActionPayloadEvent, cb: EmitFn) => void
+  onEvent?: (event: ServerToClientEvent, cb: EmitFn) => void
 ) => {
   emitHandler: EmitHandlerFn,
   emit: EmitFn,
-  events: Array<ActionPayloadEvent>
+  events: Array<ServerToClientEvent>
 }
 
 export const useSocket: UseSocketFn = (
@@ -37,17 +35,15 @@ export const useSocket: UseSocketFn = (
       }
     }), [socketId])
 
-  const [events, setEvents] = useState<Array<ActionPayloadEvent>>([]);
+  const [events, setEvents] = useState<Array<ServerToClientEvent>>([]);
 
   
   const emit: EmitFn = useCallback((topic, payload) => {
     socket.emit(
       CHANNEL_NAME, {
-        action: [
-          socketId,
-          'Controller',
-          topic
-        ].join(NAMESPACE_SEPARATOR),
+        action: topic,
+        source: socketId,
+        target: Entity.CONTROLLER,
         payload
       })
   }, [socketId, socket])
@@ -65,11 +61,10 @@ export const useSocket: UseSocketFn = (
   }, [emit])
 
   useEffect(() => {
-    socket.on(CHANNEL_NAME, (event: ActionPayloadEvent) => {
-      const { action } = event
-      const [, receiverId] = action.split(NAMESPACE_SEPARATOR)
+    socket.on(CHANNEL_NAME, (event: ServerToClientEvent) => {
+      const { target } = event
 
-      if (receiverId === socketId) {
+      if (target === socketId) {
         setEvents(prev => {
           return [...prev, event]
         });

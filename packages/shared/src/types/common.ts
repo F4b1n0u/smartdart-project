@@ -3,9 +3,10 @@ export enum Entity {
   DISPLAY_SCREEN = "DISPLAY_SCREEN",
   CONTROL_SCREEN = "CONTROL_SCREEN",
   PLAYER_INPUT = "PLAYER_INPUT",
+  CONTROLLER = "CONTROLLER"
 }
 
-export type Event = { action: string; payload: any };
+export type ClientEntity = Entity.DISPLAY_SCREEN | Entity.CONTROL_SCREEN | Entity.PLAYER_INPUT
 
 export enum Multiplier {
   SINGLE_SLIM = 'SINGLE_SLIM',
@@ -19,10 +20,14 @@ export type Dart = {
   multiplier: Multiplier
 }
 
-export type Hit = Dart
+export type Throw = Dart
 
 export type Player = {
-  id: number,
+  id: string,
   name: string,
   photo: string
+}
+
+export enum Game {
+  GAME_A = 'GAME_A'
 }

@@ -2,8 +2,9 @@ import { useState, useCallback, useRef } from 'react';
 import styled from 'styled-components';
 import PlayerComponent from './Player';
 import Webcam from 'react-webcam';
-import { Entity, Player } from '../../../../shared/src/types';
-import { useSocketState } from '../../shared/useSocketState';
+import { Entity, Player } from '../../../../shared/src/types/common';
+import { useSocketState } from '../../useSocketState';
+import { v4 as uuidv4 } from 'uuid'
 
 const PlayerManagementWrapper = styled.div`
   display: flex;
@@ -42,25 +43,25 @@ const WebcamContainer = styled.div`
   }
 `;
 
-const initialPlayersData: Array<Player> = [];
-
 const usePlayerManager = () => {
-
   // TODO add a useSocket at the root of every client and rely on it to avoid to have to pass down the entity every time
-  const { state, update: updatePlayers } = useSocketState<Array<Player>>(Entity.CONTROL_SCREEN, 'players')
+  const { state, isLoaded, emit } = useSocketState<Array<Player>>(Entity.CONTROL_SCREEN, 'players')
   const players = state || []
 
   const addPlayer = useCallback(({ name, photo }: Omit<Player, 'id'>) => {
     if (name.trim() && photo) {
-      updatePlayers([...players, { id: players.length + 1, name, photo }]);
+      // TODO rely on action to add and remove, this will prevent the client to generate ids and to filter array to remove entries
+      // this is business "logic" this should be in the backend !
+      emit('ADD_PLAYER', { id: uuidv4(), name, photo });
     }
-  }, [updatePlayers, players]);
+  }, [emit, players]);
 
-  const removePlayer = (id: number) => {
-    updatePlayers(players.filter(player => player.id !== id));
+  const removePlayer = (id: string) => {
+    emit('REMOVE_PLAYER', { id });
   };
 
   return {
+    isLoaded,
     players,
     addPlayer,
     removePlayer,
@@ -75,7 +76,8 @@ const PlayerManagement = () => {
   const {
     addPlayer,
     removePlayer,
-    players
+    players,
+    isLoaded
   } = usePlayerManager()
 
   const handleClickAddPlayer = useCallback(() => {
@@ -115,15 +117,18 @@ const PlayerManagement = () => {
         />
         <button onClick={handleClickAddPlayer}>Add</button>
       </InputWrapper>
-      <PlayerListWrapper>
-        {players.map(player => (
-          <PlayerComponent
-            key={player.id}
-            player={player}
-            removePlayer={removePlayer}
-          />
-        ))}
-      </PlayerListWrapper>
+      {isLoaded && (
+        <PlayerListWrapper>
+          {players.map(player => (
+            <PlayerComponent
+              key={player.id}
+              player={player}
+              removePlayer={removePlayer}
+            />
+          ))}
+        </PlayerListWrapper>
+      )}
+      
       <button>Dartboard</button>
       <button>Settings</button>
     </PlayerManagementWrapper>

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import VirtualDartboard from '../shared/virtual_dartboard/VirtualDartboard'
 import { Hit } from '../types'
 import { useSocket } from '../useSocket'
-import { Entity } from '../../../shared/src/types'
+import { Entity } from '../../../shared/src/types/common'
 
 const position = { x: 400, y: 400 }
 
