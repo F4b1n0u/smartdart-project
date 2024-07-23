@@ -4,7 +4,7 @@ import PlayerManager from './player_manager/PlayerManager'
 const ControlScreen = () => {
   return (
     <>
-      <ThrowManager />
+      {/* <ThrowManager /> */}
       <PlayerManager />
     </>
   )

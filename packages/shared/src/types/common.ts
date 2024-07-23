@@ -1,13 +1,44 @@
 export enum Entity {
+  // physical unicorn dartboard
   DARTBOARD = "DARTBOARD",
-  DISPLAY_SCREEN = "DISPLAY_SCREEN",
-  CONTROL_SCREEN = "CONTROL_SCREEN",
+
+  // projection on the wall
+  SCORE_BOARD = "SCORE_BOARD",
+  
+  // tablet close the the player
+  GAME_SELECTOR = "GAME_SELECTOR",
+  PLAYER_MANAGER = "PLAYER_MANAGER",
+  ROUND_MANAGER = "ROUND_MANAGER",
+  THROW_MANAGER = "THROW_MANAGER",
+  SETUP_HANDLER = "SETUP_HANDLER",
+  
+  // dedicated mobile per player
   PLAYER_INPUT = "PLAYER_INPUT",
+
+  // server receiving/emitting from/to clients
   CONTROLLER = "CONTROLLER"
 }
 
-export type ClientEntity = Entity.DISPLAY_SCREEN | Entity.CONTROL_SCREEN | Entity.PLAYER_INPUT | Entity.DARTBOARD
+export type ClientEntity =
+  Entity.SCORE_BOARD |
+  Entity.PLAYER_MANAGER |
+  Entity.GAME_SELECTOR |
+  Entity.ROUND_MANAGER |
+  Entity.THROW_MANAGER |
+  Entity.SETUP_HANDLER |
+  Entity.PLAYER_INPUT |
+  Entity.DARTBOARD
 
+export const CLIENT_ENTITIES: Array<ClientEntity> = [
+  Entity.SCORE_BOARD,
+  Entity.PLAYER_MANAGER,
+  Entity.GAME_SELECTOR,
+  Entity.ROUND_MANAGER,
+  Entity.THROW_MANAGER,
+  Entity.SETUP_HANDLER,
+  Entity.PLAYER_INPUT,
+  Entity.DARTBOARD
+]
 export enum Multiplier {
   SINGLE_SLIM = 'SINGLE_SLIM',
   SINGLE_FAT = 'SINGLE_FAT',

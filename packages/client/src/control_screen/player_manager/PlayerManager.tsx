@@ -4,7 +4,8 @@ import PlayerComponent from './Player';
 import Webcam from 'react-webcam';
 import { Entity, Player } from '../../../../shared/src/types/common';
 import { useSocketState } from '../../useSocketState';
-import { v4 as uuidv4 } from 'uuid'
+import { useSocketEmit } from '../../useSocketEmit';
+import { FromPlayerManagerEvent } from '../../../../shared/src/types/events/PlayerManagerEvent';
 
 const PlayerManagementWrapper = styled.div`
   display: flex;
@@ -45,14 +46,22 @@ const WebcamContainer = styled.div`
 
 const usePlayerManager = () => {
   // TODO add a useSocket at the root of every client and rely on it to avoid to have to pass down the entity every time
-  const { state, isLoaded, emit } = useSocketState<Array<Player>>(Entity.CONTROL_SCREEN, 'players')
+  const { state, isLoaded } = useSocketState<
+    Entity.PLAYER_MANAGER,
+    Array<Player>
+  >(Entity.PLAYER_MANAGER, 'players')
+  
+  const emit = useSocketEmit<
+    FromPlayerManagerEvent
+  >(Entity.PLAYER_MANAGER)
+
   const players = state || []
+
+
 
   const addPlayer = useCallback(({ name, photo }: Omit<Player, 'id'>) => {
     if (name.trim() && photo) {
-      // TODO rely on action to add and remove, this will prevent the client to generate ids and to filter array to remove entries
-      // this is business "logic" this should be in the backend !
-      emit('ADD_PLAYER', { id: uuidv4(), name, photo });
+      emit('ADD_PLAYER', { name, photo });
     }
   }, [emit, players]);
 

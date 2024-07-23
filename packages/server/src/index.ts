@@ -4,20 +4,17 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import cors from "cors";
-import {
-  ClientToServerMessages,
-  InterServerMessages,
-  ServerToClientMessages,
-  SocketData,
-  Sockets,
-} from "./types/socketio";
 import { PORT_EXPRESS, PORT_SOCKET_IO , HOST_CORS } from "./config";
 import { CHANNEL_NAME } from "@shared/constants";
 
 import type { AppState } from "@shared/types/common";
-import type { ControllerEvent } from "@shared/types/events/ControllerEvent";
-import type { ServerToClientEvent } from "@shared/types/events/common";
-import { Entity } from '@shared/types/common';
+import type { ToClientEvent } from "@shared/types/events/ToClientEvent";
+import type { FromClientEvent } from "@shared/types/events/FromClientEvent";
+import type { ClientToServerMessages,
+  InterServerMessages,
+  ServerToClientMessages,
+  Sockets, } from "@shared/types/socketio";
+import { Entity, ClientEntity, CLIENT_ENTITIES } from '@shared/types/common';
 
 
 const app = express();
@@ -32,7 +29,7 @@ const io = new Server<
   ClientToServerMessages,
   ServerToClientMessages,
   InterServerMessages,
-  SocketData
+  unknown
 >(httpServer, {
   cors: {
     ...CORS_SETTINGS,
@@ -63,27 +60,14 @@ io.on("connection", (socket) => {
     },
   }
 
-  const broadcastState = (state: unknown) => {
-    emit({
-      target: Entity.CONTROL_SCREEN,
-      action: 'NOTIFY_STATE_CHANGE',
-      payload: state
+  const broadcastState = (state: AppState) => {
+    CLIENT_ENTITIES.forEach((target) => {
+      emit({
+        target,
+        action: 'NOTIFY_STATE_CHANGE',
+        payload: state
+      })
     })
-    emit({
-      target: Entity.DARTBOARD,
-      action: 'NOTIFY_STATE_CHANGE',
-      payload: state
-    })
-    emit({
-      target: Entity.DISPLAY_SCREEN,
-      action: 'NOTIFY_STATE_CHANGE',
-      payload: state
-    })
-    // emit({
-    //   target: Entity.PLAYER_INPUT,
-    //   action: 'NOTIFY_STATE_CHANGE',
-    //   payload: state
-    // })
   }
 
   const updateState = (path: string, value: unknown) => {
@@ -91,7 +75,7 @@ io.on("connection", (socket) => {
     broadcastState(state)
   }
 
-  const emitterId = socket.handshake.query.emitterEntityId as Entity;
+  const emitterId = socket.handshake.query.emitter as Entity;
 
   console.log("Incoming connection from: ", emitterId);
 
@@ -99,7 +83,7 @@ io.on("connection", (socket) => {
 
   const emit = ({
       target, action, payload
-  }: Omit<ServerToClientEvent, 'source'>
+  }: Omit<ToClientEvent, 'source'>
   ) => {
     const event = {
       action,
@@ -113,13 +97,13 @@ io.on("connection", (socket) => {
 
     if (socket) {
       // TODO check why I had to do this cast
-      socket.emit(CHANNEL_NAME, event as ServerToClientEvent);
+      socket.emit(CHANNEL_NAME, event as ToClientEvent);
     } else {
       console.error(`the socket "${target}" is not registered`);
     }
   };
 
-  function handleNewMessage(event: ControllerEvent) {
+  function handleNewMessage(event: FromClientEvent) {
     console.log("receives <- ", event);
 
     const { action, source, target } = event;
@@ -128,28 +112,17 @@ io.on("connection", (socket) => {
       return;
     }
 
-    // AVOID USING THIS !
-    // if (action === '__UPDATE_STATE__') {
-    //   const { payload } = event
-    //   const {
-    //     path,
-    //     value
-    //   } = payload
-
-    //   updateState(path, value)    
-    // }
-
-    if (action === 'GET_STATE') {
-      broadcastState(state)
-    }
-
     switch (source) {
       case Entity.PLAYER_INPUT: {
+        if (action === 'GET_FULL_APP_STATE') {
+          broadcastState(state)
+        }
         break;
       }
-      case Entity.CONTROL_SCREEN: {
+
+      case Entity.PLAYER_MANAGER: {
         switch (action) {
-          case "ADD_PLAYER": {
+          case 'ADD_PLAYER': {
             const { payload } = event
             const newPlayers = [
               ...state.players, {
@@ -163,7 +136,7 @@ io.on("connection", (socket) => {
 
             break;
           }
-          case "REMOVE_PLAYER": {
+          case 'REMOVE_PLAYER': {
             const { players } = state
             const { payload } = event
             
@@ -172,35 +145,44 @@ io.on("connection", (socket) => {
 
             break;
           }
-          case "MISS_THROW": {
-            
+        }
+        break;
+      }
+
+      case Entity.THROW_MANAGER: {
+        switch (action) {
+          case 'MISS_THROW': {
             break;
           }
-
+          
           case 'SIMULATE_THROW': {
-            emit({
-              target: Entity.CONTROL_SCREEN,
-              action: "DISABLE_REMAINING_THROW",
-              payload: undefined
-             })
             break;
           }
         }
 
         break;
       }
+
       case Entity.DARTBOARD: {
         switch (action) {
-          case "CONNECTION_ACK": {
-            // TODO update state to reflec the connection status
+          case 'REGISTER_THROW': {
             break;
           }
-          case "REGISTER_THROW": {
-            // TODO update current game and emit updated state
+        }
+        break;
+      }
+
+      case Entity.GAME_SELECTOR: {
+        switch (action) {
+          case 'FOCUS_GAME': {
+            break;
+          }
+          case 'START_GAME': {
             break;
           }
         }
       }
+      
     }
   }
 

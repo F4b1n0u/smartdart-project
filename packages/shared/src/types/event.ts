@@ -1,4 +1,4 @@
-import { Entity } from '../common'
+import { Entity } from './common'
 
 import { ControlScreenEvent } from './ControlScreenEvent'
 import { DisplayScreenEvent } from './DisplayScreenEvent'

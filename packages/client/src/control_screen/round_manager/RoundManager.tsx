@@ -3,13 +3,13 @@ import { useDartBoard } from '../../useDartBoard'
 import VirtualDartboard, { touchableRadiiPercents } from '../../shared/virtual_dartboard/VirtualDartboard'
 import { useCallback } from 'react'
 import { Entity, Location } from '../../../../shared/src/types/common'
-import { ControlScreenEvent } from '../../../../shared/src/types/events/ControlScreenEvent'
-import { ThrowManagementEvent } from '../../../../shared/src/types/events/ControllerEvent'
+import { ControlScreenEvent } from '../../../../shared/src/types/events/RoundManagerEvent'
+import { FromThrowManagementEvent } from '../../../../shared/src/types/events/ControllerEvent'
 
 function RoundManager() {
-  const { emit, emitHandler, events } = useSocket<ThrowManagementEvent, ControlScreenEvent>({ entity: Entity.CONTROL_SCREEN })
+  const { emit, emitHandler, events } = useSocket<FromThrowManagementEvent, ControlScreenEvent>({ entity: Entity.ROUND_MANAGER })
 
-  const { hits, connect } = useDartBoard()
+  const { connect } = useDartBoard()
 
   const handleHitZoneSelected = useCallback((location: Location) => {
     emit('SIMULATE_THROW', location)
@@ -42,13 +42,6 @@ function RoundManager() {
 
         {/* TODO handle dartboard connection status */}
       <button onClick={connect}>connect to dartboard</button>
-      
-      <h3>Dartboard logs</h3>
-      <ul>
-        {hits.map((event, index) => (
-          <li key={index}>{JSON.stringify(event)}</li>
-        ))}
-      </ul>
     </div>
   );
 }

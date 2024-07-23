@@ -1,30 +1,29 @@
 import { useCallback } from 'react'
 import { Location, Entity } from '../../shared/src/types/common'
 import { useSocket } from './useSocket'
+import { useSocketEmit } from './useSocketEmit'
 import { Multiplier } from './types'
-import { DartboardEvent } from '../../shared/src/types/events/ControllerEvent'
-import { ServerToClientEvent } from '../../shared/src/types/events/common'
+import { FromDartBoardEvent, ToDartBoardEvent } from '../../shared/src/types/events/DartBoardEvent'
 
 export const useDartBoard = () => {
-  const { events: hits, emit } = useSocket<DartboardEvent, ServerToClientEvent>(Entity.DARTBOARD)
+  const emit = useSocketEmit<FromDartBoardEvent>(Entity.DARTBOARD)
   const disconnect = useCallback(() => {}, [])
 
   const connect = useCallback(() => {
     connectToDartBoard({
       onConnected: () => {
-        emit('CONNECTION_ACK')
+        emit('NOTIFY_CONNECTION_ESTABLISHED')
       },
       onDartLanding: (location: Location) => {
         emit('REGISTER_THROW', location)
       },
-      onButtonPress: () => emit('BUTTON_PRESSED'),
+      onButtonPress: () => emit('NOTIFY_BUTTON_PRESSED'),
     })
 
     return disconnect
   }, [disconnect, emit])
   
   return {
-    hits,
     connect,
     disconnect: () => {},
   }

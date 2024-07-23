@@ -1,44 +1,39 @@
-import { useCallback, useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useSocket } from "./useSocket"
-import { Entity } from "../../shared/src/types/common"
+import { AppState, ClientEntity, Entity } from "../../shared/src/types/common"
 import { get } from 'lodash';
-import { ClientToServerEvents } from '../../shared/src/types/event';
+import { GetStateEvent, NotifyAppStateChangeEvent } from '../../shared/src/types/events/utils';
 
-export const useSocketState = <TState extends any, TEvents extends ClientToServerEvents>(entity: Entity, path = '') => {
+type ValuesOf<T> = T[keyof T];
+
+export const useSocketState = <
+  TEntity extends ClientEntity,
+  TState extends ValuesOf<AppState>,  
+>(entity: TEntity, path: string) => {
   const [isLoaded, setIsLoaded] = useState<boolean>(false)
   const [state, setState] = useState<TState>()
 
-  const { emit } = useSocket<ClientToServerEvents>(
+  const { emit } = useSocket<
+    GetStateEvent<ClientEntity>,
+    // TODO check why the following does not work
+    // NotifyAppStateChangeEvent<TEntity>
+    NotifyAppStateChangeEvent<Entity.DARTBOARD>
+  >({
     entity,
-    ({ action, payload }) => {
+    onEvent: ({ action, payload }) => {
       if (action === 'NOTIFY_STATE_CHANGE') {
         setState(get(payload, path))
         setIsLoaded(true)
       }
     }
-  )
+  })
 
   useEffect(() => {
-    emit('GET_STATE')
+    emit('GET_FULL_APP_STATE')
   }, [emit])
-
-  // Nice to have to speed up dev BUT
-  // this open the door of
-  //  - how to update the state
-  // - -what does the state can be like on the client side
-  // and this is a server concern ! so avoid to use this !!!
-  // rely on emit and a specific action rather than a generic UPDATE_STATE
-  const update = useCallback((value: any)  => {
-    emit('UPDATE_STATE', {
-      path,
-      value,
-    })
-  }, [emit, path])
 
   return {
     state,
-    isLoaded,
-    emit,
-    __update__: update
+    isLoaded
   }
 }
