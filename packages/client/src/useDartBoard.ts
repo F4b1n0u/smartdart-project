@@ -1,26 +1,21 @@
-import { useCallback, useState } from 'react'
-import { Entity, Throw } from '../../shared/src/types/common'
+import { useCallback } from 'react'
+import { Location, Entity } from '../../shared/src/types/common'
 import { useSocket } from './useSocket'
 import { Multiplier } from './types'
+import { DartboardEvent } from '../../shared/src/types/events/ControllerEvent'
+import { ServerToClientEvent } from '../../shared/src/types/events/common'
 
 export const useDartBoard = () => {
-  const [isConnected, setIsconnected] = useState(false)
-  
-  const { events: hits, emit } = useSocket(Entity.DARTBOARD, ({ action }) => {
-    const [, , topic] = action.split(':')
-    if (topic === 'CONNECTED_ACK') {
-      setIsconnected(true)
-    }
-  })
+  const { events: hits, emit } = useSocket<DartboardEvent, ServerToClientEvent>(Entity.DARTBOARD)
   const disconnect = useCallback(() => {}, [])
 
   const connect = useCallback(() => {
     connectToDartBoard({
       onConnected: () => {
-        emit('CONNECTED')
+        emit('CONNECTION_ACK')
       },
-      onDartLanding: (hit: Throw) => {
-        emit('REGISTER_THROW', hit)
+      onDartLanding: (location: Location) => {
+        emit('REGISTER_THROW', location)
       },
       onButtonPress: () => emit('BUTTON_PRESSED'),
     })
@@ -32,11 +27,16 @@ export const useDartBoard = () => {
     hits,
     connect,
     disconnect: () => {},
-    isConnected
   }
 }
 
-const connectToDartBoard = async ({ onConnected, onDartLanding, onButtonPress }) => {
+type ConnectToDartBoardParams = {
+  onConnected: () => void,
+  onDartLanding: (location: Location) => void,
+  onButtonPress: () => void,
+}
+
+const connectToDartBoard = async ({ onConnected, onDartLanding, onButtonPress }: ConnectToDartBoardParams) => {
   try {
     const device = await navigator.bluetooth.requestDevice({
       filters: [
@@ -74,12 +74,12 @@ const connectToDartBoard = async ({ onConnected, onDartLanding, onButtonPress })
           onButtonPress();
           console.log("button pressed");
         } else {
-          const dart = {
+          const location = {
             score,
             multiplier: multiplierMapper[multiplier],
           };
-          onDartLanding(dart);
-          console.log({ dart });
+          onDartLanding(location);
+          console.log({ location });
         }
       }
     );

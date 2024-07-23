@@ -1,70 +1,68 @@
 import io from 'socket.io-client';
 import { useCallback, useEffect, useState, useMemo } from 'react';
-import { Entity } from '../../shared/src/types/common';
-import { ClientToServerEvents, ServerToClientEvent} from '../../shared/src/types/event';
+import { ClientEntity, Entity } from '../../shared/src/types/common';
+import { ClientToServerEvents, ServerToClientEvent} from '../../shared/src/types/events/common';
+import { CHANNEL_NAME } from '../../shared/src/constants';
 
-const CHANNEL_NAME = 'SYSTEM'
-
+// TODO see to rely on .env, ideally the same one (server/client)
 const SOCKET_IO_HOST = window.location.hostname
 const SOCKET_IO_PORT = 8080
 
-type EmitFn = (topic: string, payload?: any) => void
-type EmitHandlerFn = (
-  action: ClientToServerEvents['action'],
-  payload?: ClientToServerEvents['payload']
-) => () => void
-type UseSocketFn = (
-  socketId: Entity,
-  onEvent?: (event: ServerToClientEvent, cb: EmitFn) => void
-) => {
-  emitHandler: EmitHandlerFn,
-  emit: EmitFn,
-  events: Array<ServerToClientEvent>
-}
+type EmitFn<TEmitEvent extends ClientToServerEvents> = (action: TEmitEvent['action'], payload?: TEmitEvent['payload']) => void
 
-export const useSocket: UseSocketFn = (
-  socketId,
+type EmitHandlerFn<TEmitEvent extends ClientToServerEvents> = ({
+  action,
+  payload
+}: Pick<TEmitEvent, 'action' | 'payload'>) => () => void
+
+type UseSocketParams<
+  TEmitEvent extends ClientToServerEvents,
+  TReceiveEvent extends ServerToClientEvent
+> = ({
+  entity: ClientEntity,
+  onEvent?: (event: TReceiveEvent, cb: EmitFn<TEmitEvent>) => void
+})
+
+export const useSocket = <
+  TEmitEvent extends ClientToServerEvents,
+  TReceiveEvent extends ServerToClientEvent
+>({
+  entity,
   onEvent = () => {}
-) => {
-  const socket = useMemo(() => io(`http://${SOCKET_IO_HOST}:${SOCKET_IO_PORT}`, {
-      // secure: true,
-      // rejectUnauthorized: false, // Use this only for self-signed certificates
-      // withCredentials: true,
-      query: {
-        socketId
+}: UseSocketParams<TEmitEvent, TReceiveEvent>) => {
+  const socket = useMemo(
+    () => io(
+      `http://${SOCKET_IO_HOST}:${SOCKET_IO_PORT}`,
+      {
+        query: {
+          emitterEntityId: entity
+        }
       }
-    }), [socketId])
+    ),
+    [entity]
+  )
 
   const [events, setEvents] = useState<Array<ServerToClientEvent>>([]);
 
-  
-  const emit: EmitFn = useCallback((topic, payload) => {
+  const emit= useCallback<EmitFn<TEmitEvent>>((topic, payload) => {
     socket.emit(
       CHANNEL_NAME, {
         action: topic,
-        source: socketId,
+        source: entity,
         target: Entity.CONTROLLER,
         payload
       })
-  }, [socketId, socket])
+  }, [entity, socket])
 
-  const emitHandler: EmitHandlerFn = useCallback((action, payload) => () => {
+  const emitHandler = useCallback<EmitHandlerFn<TEmitEvent>>(({ action, payload }) => () => {
     emit(action, payload)
   }, [emit])
 
   useEffect(() => {
-    emit('START_ACK');
-    
-    return () => {
-      emit('STOP_ACK');
-    }
-  }, [emit])
+    socket.on(CHANNEL_NAME, (event: TReceiveEvent) => {
+      const { target: receiver } = event
 
-  useEffect(() => {
-    socket.on(CHANNEL_NAME, (event: ServerToClientEvent) => {
-      const { target } = event
-
-      if (target === socketId) {
+      if (receiver === entity) {
         setEvents(prev => {
           return [...prev, event]
         });
@@ -75,7 +73,7 @@ export const useSocket: UseSocketFn = (
     return () => {
       socket.off(CHANNEL_NAME);
     };
-  }, [socketId, onEvent, emit, socket]);
+  }, [entity, onEvent, emit, socket]);
 
   return {
     emitHandler,

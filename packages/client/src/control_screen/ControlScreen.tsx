@@ -1,4 +1,4 @@
-import ThrowManager from './throw_manager/ThrowManager'
+import ThrowManager from './round_manager/RoundManager'
 import PlayerManager from './player_manager/PlayerManager'
 
 const ControlScreen = () => {

@@ -3,7 +3,7 @@ import { Stage, Graphics } from '@pixi/react';
 import { PointData } from 'pixi.js';
 import { Multiplier, Zone, Hit } from '../../types'
 import '@pixi/events';
-import { Dart } from '../../../../shared/src/types/common';
+import { Location } from '../../../../shared/src/types/common';
 
 const totalSegments = 20;
 const multipliers = Object.values(Multiplier);
@@ -153,7 +153,7 @@ const ZoneComponent = ({
 type VirtualDartboardProps = {
   center: Position,
   hits?: Array<Hit>,
-  onZoneBeenHit?: (dart: Dart) => void,
+  onZoneBeenHit?: (dart: Location) => void,
   radiiPercents?: RadiiPercents,
   height: number,
   width: number

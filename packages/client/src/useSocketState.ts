@@ -2,17 +2,21 @@ import { useCallback, useState, useEffect } from 'react'
 import { useSocket } from "./useSocket"
 import { Entity } from "../../shared/src/types/common"
 import { get } from 'lodash';
+import { ClientToServerEvents } from '../../shared/src/types/event';
 
-export const useSocketState = <TState extends any>(entity: Entity, path = '') => {
+export const useSocketState = <TState extends any, TEvents extends ClientToServerEvents>(entity: Entity, path = '') => {
   const [isLoaded, setIsLoaded] = useState<boolean>(false)
   const [state, setState] = useState<TState>()
 
-  const { emit } = useSocket(entity, ({ action, payload }) => {
-    if (action === 'NOTIFY_STATE_CHANGE') {
-      setState(get(payload, path))
-      setIsLoaded(true)
+  const { emit } = useSocket<ClientToServerEvents>(
+    entity,
+    ({ action, payload }) => {
+      if (action === 'NOTIFY_STATE_CHANGE') {
+        setState(get(payload, path))
+        setIsLoaded(true)
+      }
     }
-  })
+  )
 
   useEffect(() => {
     emit('GET_STATE')

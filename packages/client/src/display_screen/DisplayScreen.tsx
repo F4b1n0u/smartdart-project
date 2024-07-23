@@ -3,19 +3,21 @@ import VirtualDartboard from '../shared/virtual_dartboard/VirtualDartboard'
 import { Hit } from '../types'
 import { useSocket } from '../useSocket'
 import { Entity } from '../../../shared/src/types/common'
-
+import { StateEvent, DartboardEvent, ControllerEvent} from '../../../shared/src/types/events/ControllerEvent'
 const position = { x: 400, y: 400 }
 
 
 const DisplayScreen = () => {
-  const [hits, seHits] = useState<Array<Hit>>([])
+  const [locations, setLocations] = useState<Array<Hit>>([])
 
-  const { events } = useSocket(Entity.DISPLAY_SCREEN, ({ action, payload }) => {
-    const [,,topic] = action.split(':')
-    switch(topic) {
-      case 'DART_LANDED': {
-        seHits((hits) => [...hits, payload])
-        break;
+  const { events } = useSocket<ControllerEvent, StateEvent | DartboardEvent>({
+    entity: Entity.DISPLAY_SCREEN,
+    onEvent: ({ action, payload }) => {
+      switch(action) {
+        case 'REGISTER_THROW': {
+          setLocations((locations) => [...locations, payload])
+          break;
+        }
       }
     }
   })
@@ -26,7 +28,7 @@ const DisplayScreen = () => {
         height={800}
         width={800}
         center={position}
-        hits={hits}
+        hits={locations}
         scale={4}
       />
 

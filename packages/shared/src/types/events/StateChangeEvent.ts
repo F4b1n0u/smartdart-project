@@ -1,5 +1,5 @@
-import { Entity } from './common'
-import { GenericEvent } from './event'
+import { Entity } from '../common'
+import { GenericEvent } from './common'
 
 type GenericStateEvent<TTarget extends Entity> = GenericEvent<
   'NOTIFY_STATE_CHANGE',

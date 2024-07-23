@@ -1,5 +1,5 @@
-import { Entity } from './common'
-import { GenericEvent } from './event'
+import { Entity } from '../common'
+import { GenericEvent } from './common'
 
 // Event that the Display Screen is going to RECEIVE/HANDLE
 type GenericPlayerInputEvent<TAction extends string, TPayload> = GenericEvent<

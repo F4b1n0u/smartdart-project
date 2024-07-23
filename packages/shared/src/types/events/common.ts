@@ -1,4 +1,4 @@
-import { Entity } from './common'
+import { Entity } from '../common'
 
 import { ControlScreenEvent } from './ControlScreenEvent'
 import { DisplayScreenEvent } from './DisplayScreenEvent'
@@ -7,7 +7,7 @@ import { StateChangeEvent } from './StateChangeEvent'
 
 import { ControllerEvent } from './ControllerEvent'
 
-export type GenericEvent<TAction extends string, TPayload, TSource extends Entity, TTarget extends Entity, > = {
+export type GenericEvent<TAction extends string, TPayload, TSource extends Entity, TTarget extends Entity > = {
   action: TAction;
   payload: TPayload;
   source: TSource;

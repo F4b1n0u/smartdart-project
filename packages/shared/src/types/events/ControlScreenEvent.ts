@@ -1,5 +1,5 @@
-import { Entity, Player } from './common'
-import { GenericEvent } from './event'
+import { Entity, Player } from '../common'
+import { GenericEvent } from './common'
 
 // Event that the Control Screen is going to RECEIVE/HANDLE
 type GenericControlScreenEvent<TAction extends string, TPayload> = GenericEvent<

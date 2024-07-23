@@ -3,16 +3,28 @@ import { DPad } from './DPad';
 import { Entity } from '../../../shared/src/types/common'
 
 function PlayerInput() {
-  const { emitHandler, events } = useSocket(Entity.PLAYER_INPUT)
+  const { emitHandler, events } = useSocket({ entity: Entity.PLAYER_INPUT })
 
   return (
     <div>
       <h1>Player Input</h1>
       <DPad
-        onUp={emitHandler('DPAD_PRESSED', 'UP')}
-        onDown={emitHandler('DPAD_PRESSED', 'DOWN')}
-        onLeft={emitHandler('DPAD_PRESSED', 'LEFT')}
-        onRight={emitHandler('DPAD_PRESSED', 'RIGHT')}
+        onUp={emitHandler({
+          action: 'DPAD_PRESSED',
+          payload: 'UP'
+        })}
+        onDown={emitHandler({
+          action: 'DPAD_PRESSED',
+          payload: 'DOWN'
+        })}
+        onLeft={emitHandler({
+          action: 'DPAD_PRESSED',
+          payload: 'LEFT'
+        })}
+        onRight={emitHandler({
+          action: 'DPAD_PRESSED',
+          payload: 'RIGHT'
+        })}
       />
 
       <ul>
