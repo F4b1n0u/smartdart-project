@@ -1,11 +1,16 @@
-import ThrowManager from './round_manager/RoundManager'
+import { useDartBoard } from '../useDartBoard'
 import PlayerManager from './player_manager/PlayerManager'
+import { GameSelector } from './game_selector/GameSelector'
 
 const ControlScreen = () => {
+  const { connect } = useDartBoard()
+
   return (
     <>
-      {/* <ThrowManager /> */}
+      <GameSelector />
       <PlayerManager />
+
+      <button onClick={connect}>connect to dartboard</button>
     </>
   )
 }

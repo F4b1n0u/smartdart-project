@@ -1,4 +1,4 @@
-export enum Entity {
+export enum Topic {
   // physical unicorn dartboard
   DARTBOARD = "DARTBOARD",
 
@@ -19,25 +19,25 @@ export enum Entity {
   CONTROLLER = "CONTROLLER"
 }
 
-export type ClientEntity =
-  Entity.SCORE_BOARD |
-  Entity.PLAYER_MANAGER |
-  Entity.GAME_SELECTOR |
-  Entity.ROUND_MANAGER |
-  Entity.THROW_MANAGER |
-  Entity.SETUP_HANDLER |
-  Entity.PLAYER_INPUT |
-  Entity.DARTBOARD
+export type ClientTopic =
+  Topic.SCORE_BOARD |
+  Topic.PLAYER_MANAGER |
+  Topic.GAME_SELECTOR |
+  Topic.ROUND_MANAGER |
+  Topic.THROW_MANAGER |
+  Topic.SETUP_HANDLER |
+  Topic.PLAYER_INPUT |
+  Topic.DARTBOARD
 
-export const CLIENT_ENTITIES: Array<ClientEntity> = [
-  Entity.SCORE_BOARD,
-  Entity.PLAYER_MANAGER,
-  Entity.GAME_SELECTOR,
-  Entity.ROUND_MANAGER,
-  Entity.THROW_MANAGER,
-  Entity.SETUP_HANDLER,
-  Entity.PLAYER_INPUT,
-  Entity.DARTBOARD
+export const CLIENT_TOPICS: Array<ClientTopic> = [
+  Topic.SCORE_BOARD,
+  Topic.PLAYER_MANAGER,
+  Topic.GAME_SELECTOR,
+  Topic.ROUND_MANAGER,
+  Topic.THROW_MANAGER,
+  Topic.SETUP_HANDLER,
+  Topic.PLAYER_INPUT,
+  Topic.DARTBOARD
 ]
 export enum Multiplier {
   SINGLE_SLIM = 'SINGLE_SLIM',
@@ -64,8 +64,10 @@ export type Player = {
   photo: string
 }
 
-export enum Game {
-  GAME_A = 'GAME_A'
+export enum GameId {
+  GAME_A = 'GAME_A',
+  GAME_B = 'GAME_B',
+  GAME_C = 'GAME_C'
 }
 
 export enum DPadDirection {
@@ -81,27 +83,20 @@ export enum DPadDirection {
 
 export type AppState = {
   // high level status, wil lbe relied on on multiple clients/screens
-  app: {
-    status:
-      'READY_TO_PLAY' | // mainScreen: display preview of focused game  // controlScreen: display the carrousell
-      'SETTING_UP' |    // mainScreen: display setting up helpers       // controlScreen: display setup component
-      'PLAYING_GAME'    // mainScreen: display game state               // controlScreen: display Round Manager
-  },
+  status:
+    'READY_TO_PLAY' | // mainScreen: display preview of focused game  // controlScreen: display the carrousell
+    'SETTING_UP' |    // mainScreen: display setting up helpers       // controlScreen: display setup component
+    'PLAYING_GAME'    // mainScreen: display game state               // controlScreen: display Round Manager
   
+  selectedGameId: GameId
+
   // relevant only if app.status === 'PLAYING_GAME'
   // must be reset if not in this status
   game: unknown,
   
-  // always here and accessisble at all time
+  // always here and accessible at all time
   players: ReadonlyArray<Player>,
   
-  // relevant only if app.status === 'PLAYING_GAME'
-  // must be reset if not in this status
-  throwManager: {
-    currentPlayerId?: Player,
-    throwsByPlayerId: Record<Player['id'], Array<Throw>>
-  },
-
   dpad: {
     status: 'ACTIVE' | 'INACTIVE'
   },

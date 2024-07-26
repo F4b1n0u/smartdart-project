@@ -1,7 +1,7 @@
 {
   "name": "smartdart-project",
   "version": "1.0.0",
-  "description": "## 1 - server",
+  "description": "",
   "main": "index.js",
   "workspaces": [
     "packages/*"

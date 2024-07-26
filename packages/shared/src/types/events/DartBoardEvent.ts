@@ -1,12 +1,12 @@
-import { Entity, Location } from '../common'
+import { Topic, Location } from '../common'
 import { GenericEvent } from './utils'
 import { GetStateEvent, NotifyAppStateChangeEvent} from './utils'
 
 type FromEvent<TAction extends string, TPayload> = GenericEvent<
   TAction,
   TPayload,
-  Entity.DARTBOARD,
-  Entity.CONTROLLER
+  Topic.DARTBOARD,
+  Topic.CONTROLLER
 >
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -14,8 +14,8 @@ type ToEvent<TAction extends string, TPayload> = GenericEvent<
   TAction,
   TPayload,
 
-  Entity.CONTROLLER,
-  Entity.DARTBOARD
+  Topic.CONTROLLER,
+  Topic.DARTBOARD
 >
 
 export type FromDartBoardEvent = 
@@ -31,7 +31,7 @@ export type FromDartBoardEvent =
     'REGISTER_THROW',
     Location
   > |
-  GetStateEvent<Entity.DARTBOARD>
+  GetStateEvent<Topic.DARTBOARD>
 
-export type ToDartBoardEvent = NotifyAppStateChangeEvent<Entity.DARTBOARD>
+export type ToDartBoardEvent = NotifyAppStateChangeEvent<Topic.DARTBOARD>
   

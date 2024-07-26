@@ -1,5 +1,6 @@
 import { Socket } from "socket.io";
-import { ServerToClientEvent, ClientToServerEvents } from './events/utils'
+import { FromClientEvent } from './events/FromClientEvent'
+import { ToClientEvent } from './events/ToClientEvent'
 import { CHANNEL_NAME } from "../../../shared/src/constants";
 
 export interface InterServerMessages {
@@ -8,14 +9,14 @@ export interface InterServerMessages {
 
 export interface ServerToClientMessages {
   noArg: () => void;
-  [CHANNEL_NAME]: (event: ServerToClientEvent) => void;
+  [CHANNEL_NAME]: (event: ToClientEvent) => void;
 }
 
 export interface ClientToServerMessages {
-  [CHANNEL_NAME]: (event: ClientToServerEvents) => void;
+  [CHANNEL_NAME]: (event: FromClientEvent) => void;
 }
 
-import { Entity } from "../../../shared/src/types/common";
+import { Topic } from "../../../shared/src/types/common";
 
 export type SmartdartSocket = Socket<
   ClientToServerMessages,
@@ -24,4 +25,4 @@ export type SmartdartSocket = Socket<
   unknown
 >
 
-export type Sockets = Partial<Record<Entity, SmartdartSocket >>;
+export type Sockets = Partial<Record<Topic, SmartdartSocket >>;

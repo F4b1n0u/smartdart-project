@@ -1,45 +1,45 @@
-import { useState } from 'react'
-import VirtualDartboard from '../shared/virtual_dartboard/VirtualDartboard'
-import { Hit } from '../types'
-import { useSocket } from '../useSocket'
-import { Entity } from '../../../shared/src/types/common'
-import { StateEvent, DartboardEvent, ControllerEvent} from '../../../shared/src/types/events/'
+import { useSelectedGameConfig } from './useSelectedGameConfig'
 import { useSocketState } from '../useSocketState'
-const position = { x: 400, y: 400 }
 
+import { Topic, AppState } from '../../../shared/src/types/common'
 
-const ScoreBoard = () => {
-  const [locations, setLocations] = useSocketState<Array<Hit>>([])
+const DisplayScreen = () => {
+  const {
+    config,
+    isLoaded: isConfigLoaded
+  } = useSelectedGameConfig()
 
-  const { events } = useSocket<ControllerEvent, StateEvent | DartboardEvent>({
-    entity: Entity.SCORE_BOARD,
-    onEvent: ({ action, payload }) => {
-      switch(action) {
-        case 'REGISTER_THROW': {
-          setLocations((locations) => [...locations, payload])
-          break;
-        }
+  const {
+    state: status,
+    isLoaded: isAppStateLoaded
+  } = useSocketState<Topic.GAME_SELECTOR, AppState['status']>(Topic.GAME_SELECTOR, 'status') 
+  
+  if(isConfigLoaded && isAppStateLoaded) {
+    const { Preview: PreviewComponent, RunningGame: RunningGameComponent } = config!
+    switch(status) {
+      case 'PLAYING_GAME': {
+        return <RunningGameComponent />
+
+        break;
+      }
+
+      case 'READY_TO_PLAY': {
+        return <PreviewComponent />
+        break;
+      }
+
+      case 'SETTING_UP': {
+
+        return (
+          <>
+            Setting up
+          </>
+        )
+        break;
       }
     }
-  })
+  }
 
-  return (
-    <div>
-      <VirtualDartboard
-        height={800}
-        width={800}
-        center={position}
-        hits={locations}
-        scale={4}
-      />
-
-      <ul>
-        {events.map((event, index) => (
-          <li key={index}>{JSON.stringify(event)}</li>
-        ))}
-      </ul>
-    </div>   
-  )
 }
 
-export default ScoreBoard
+export default DisplayScreen

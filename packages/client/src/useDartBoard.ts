@@ -1,12 +1,12 @@
 import { useCallback } from 'react'
-import { Location, Entity } from '../../shared/src/types/common'
+import { Location, Topic } from '../../shared/src/types/common'
 import { useSocket } from './useSocket'
 import { useSocketEmit } from './useSocketEmit'
 import { Multiplier } from './types'
 import { FromDartBoardEvent, ToDartBoardEvent } from '../../shared/src/types/events/DartBoardEvent'
 
 export const useDartBoard = () => {
-  const emit = useSocketEmit<FromDartBoardEvent>(Entity.DARTBOARD)
+  const { emit } = useSocketEmit<FromDartBoardEvent>(Topic.DARTBOARD)
   const disconnect = useCallback(() => {}, [])
 
   const connect = useCallback(() => {

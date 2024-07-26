@@ -1,9 +1,9 @@
 import { useSocket } from '../useSocket';
 import { DPad } from './DPad';
-import { Entity } from '../../../shared/src/types/common'
+import { Topic } from '../../../shared/src/types/common'
 
 function PlayerInput() {
-  const { emitHandler, events } = useSocket({ entity: Entity.PLAYER_INPUT })
+  const { emitHandler, events } = useSocket({ entity: Topic.PLAYER_INPUT })
 
   return (
     <div>

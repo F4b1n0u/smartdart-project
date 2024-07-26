@@ -1,20 +1,17 @@
+
+
 # smartdart-project
 
 ## install
+`install Tmux`
+`/bin/bash -c "$(cu/rl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+`brew install tmux`
 
 `npm install`
 
 ## how to start
 
-### 1 - server
-
-`cd server`
-`npm run start:dev`
-
-### 2 - client
-
-`cd client`
-`npm run dev`
+`./start.sh`
 
 ### open browsers
 

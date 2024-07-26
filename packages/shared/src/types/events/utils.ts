@@ -1,18 +1,18 @@
-import { ClientEntity, Entity, AppState } from '../common'
+import { ClientTopic, Topic, AppState } from '../common'
 
-export type GenericEvent<TAction extends string, TPayload, TSource extends Entity, TTarget extends Entity > = {
+export type GenericEvent<TAction extends string, TPayload, TSource extends Topic, TTarget extends Topic > = {
   action: TAction;
   payload: TPayload;
   source: TSource;
   target: TTarget;
 };
 
-export type GetStateEvent<TSource extends ClientEntity> =   
+export type GetStateEvent<TSource extends ClientTopic> =   
   GenericEvent<
-    'GET_FULL_APP_STATE',
+    'REQUEST_FULL_APP_STATE',
     AppState,
     TSource,
-    Entity.CONTROLLER
+    Topic.CONTROLLER
   >
   // | GenericEvent<
   //   '__UPDATE_STATE__',
@@ -24,10 +24,18 @@ export type GetStateEvent<TSource extends ClientEntity> =
   //   Entity.CONTROLLER
   // >
 
-export type NotifyAppStateChangeEvent<TTarget extends ClientEntity> =
+export type NotifyAppStateChangeEvent<TTarget extends ClientTopic> =
   GenericEvent<
     'NOTIFY_STATE_CHANGE',
     AppState,
-    Entity.CONTROLLER,
+    Topic.CONTROLLER,
     TTarget
+  >
+  
+export type StateEvent = 
+  GenericEvent<
+    'GET_STATE',
+    AppState,
+    ClientTopic,
+    Topic.CONTROLLER
   >

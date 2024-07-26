@@ -1,19 +1,19 @@
-import { Entity, DPadDirection } from '../common'
+import { Topic, DPadDirection } from '../common'
 import { GenericEvent } from './utils'
 import { GetStateEvent, NotifyAppStateChangeEvent} from './utils'
 
 type FromEvent<TAction extends string, TPayload> = GenericEvent<
   TAction,
   TPayload,
-  Entity.PLAYER_INPUT,
-  Entity.CONTROLLER
+  Topic.PLAYER_INPUT,
+  Topic.CONTROLLER
 >
 
 type ToEvent<TAction extends string, TPayload> = GenericEvent<
   TAction,
   TPayload,
-  Entity.CONTROLLER,
-  Entity.PLAYER_INPUT
+  Topic.CONTROLLER,
+  Topic.PLAYER_INPUT
 >
 
 export type FromPlayerInputEvent = 
@@ -21,7 +21,7 @@ export type FromPlayerInputEvent =
     'NOTIFY_D-PAD_PRESSED',
     DPadDirection
   > |
-  GetStateEvent<Entity.PLAYER_INPUT>
+  GetStateEvent<Topic.PLAYER_INPUT>
 
 export type ToPlayerInputEvent = 
   ToEvent<
@@ -32,4 +32,4 @@ export type ToPlayerInputEvent =
     'DISABLE',
     undefined
   > |
-  NotifyAppStateChangeEvent<Entity.PLAYER_INPUT>
+  NotifyAppStateChangeEvent<Topic.PLAYER_INPUT>

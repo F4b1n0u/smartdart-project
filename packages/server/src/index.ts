@@ -7,14 +7,14 @@ import cors from "cors";
 import { PORT_EXPRESS, PORT_SOCKET_IO , HOST_CORS } from "./config";
 import { CHANNEL_NAME } from "@shared/constants";
 
-import type { AppState } from "@shared/types/common";
+import type { AppState, ClientTopic } from "@shared/types/common";
 import type { ToClientEvent } from "@shared/types/events/ToClientEvent";
 import type { FromClientEvent } from "@shared/types/events/FromClientEvent";
 import type { ClientToServerMessages,
   InterServerMessages,
   ServerToClientMessages,
   Sockets, } from "@shared/types/socketio";
-import { Entity, ClientEntity, CLIENT_ENTITIES } from '@shared/types/common';
+import { Topic, CLIENT_TOPICS, GameId } from '@shared/types/common';
 
 
 const app = express();
@@ -40,30 +40,25 @@ const io = new Server<
 // Use CORS middleware for Express
 app.use(cors(CORS_SETTINGS));
 
-const receiver = Entity.CONTROLLER;
+const receiver = Topic.CONTROLLER;
 const sockets: Sockets = {};
 
-io.on("connection", (socket) => {
-  // TODO handle this much better than that !
-  let state: AppState = {
-    app: {
-      status: 'READY_TO_PLAY'
-    },
-    game: {},
-    players: [],
-    throwManager: {
-      currentPlayerId: undefined,
-      throwsByPlayerId: {}
-    },
-    dpad: {
-      status: 'INACTIVE'
-    },
-  }
+// TODO handle this much better than that !
+let state: AppState = {
+  status: 'READY_TO_PLAY',
+  selectedGameId: GameId.GAME_A,
+  game: {},
+  players: [],
+  dpad: {
+    status: 'INACTIVE'
+  },
+}
 
+io.on("connection", (socket) => {
   const broadcastState = (state: AppState) => {
-    CLIENT_ENTITIES.forEach((target) => {
+    Object.keys(sockets).forEach((target) => {
       emit({
-        target,
+        target: target as ClientTopic,
         action: 'NOTIFY_STATE_CHANGE',
         payload: state
       })
@@ -75,8 +70,7 @@ io.on("connection", (socket) => {
     broadcastState(state)
   }
 
-  const emitterId = socket.handshake.query.emitter as Entity;
-
+  const emitterId = socket.handshake.query.emitter as Topic;
   console.log("Incoming connection from: ", emitterId);
 
   sockets[emitterId] = socket;
@@ -87,7 +81,7 @@ io.on("connection", (socket) => {
   ) => {
     const event = {
       action,
-      source: Entity.CONTROLLER,
+      source: Topic.CONTROLLER,
       target,
       payload,
     };
@@ -112,15 +106,21 @@ io.on("connection", (socket) => {
       return;
     }
 
+    if (action === 'REQUEST_FULL_APP_STATE') {
+      emit({
+        target: source,
+        action: 'NOTIFY_STATE_CHANGE',
+        payload: state
+      })
+    }
+
     switch (source) {
-      case Entity.PLAYER_INPUT: {
-        if (action === 'GET_FULL_APP_STATE') {
-          broadcastState(state)
-        }
+      case Topic.PLAYER_INPUT: {
+        
         break;
       }
 
-      case Entity.PLAYER_MANAGER: {
+      case Topic.PLAYER_MANAGER: {
         switch (action) {
           case 'ADD_PLAYER': {
             const { payload } = event
@@ -149,7 +149,7 @@ io.on("connection", (socket) => {
         break;
       }
 
-      case Entity.THROW_MANAGER: {
+      case Topic.THROW_MANAGER: {
         switch (action) {
           case 'MISS_THROW': {
             break;
@@ -163,7 +163,7 @@ io.on("connection", (socket) => {
         break;
       }
 
-      case Entity.DARTBOARD: {
+      case Topic.DARTBOARD: {
         switch (action) {
           case 'REGISTER_THROW': {
             break;
@@ -172,12 +172,15 @@ io.on("connection", (socket) => {
         break;
       }
 
-      case Entity.GAME_SELECTOR: {
+      case Topic.GAME_SELECTOR: {
         switch (action) {
           case 'FOCUS_GAME': {
+            const { payload } = event
+            updateState('selectedGameId', payload)
             break;
           }
-          case 'START_GAME': {
+          case 'START_SELECTED_GAME': {
+            updateState('status', 'PLAYING_GAME')
             break;
           }
         }

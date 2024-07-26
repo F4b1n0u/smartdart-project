@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 import { Socket } from 'socket.io-client'
 import { useCallback, useEffect, useState, useMemo } from 'react';
-import { ClientEntity, Entity } from '../../shared/src/types/common';
+import { ClientTopic, Topic } from '../../shared/src/types/common';
 import { FromClientEvent } from '../../shared/src/types/events/FromClientEvent';
 import { ToClientEvent } from '../../shared/src/types/events/ToClientEvent';
 import { CHANNEL_NAME } from '../../shared/src/constants';
@@ -17,18 +17,18 @@ type EmitHandlerFn<TEmitEvent extends FromClientEvent> = ({
   payload
 }: Pick<TEmitEvent, 'action' | 'payload'>) => () => void
 
-let sockets: Partial<Record<ClientEntity, Socket>> = {
-    [Entity.SCORE_BOARD]: undefined,
-    [Entity.PLAYER_MANAGER]: undefined,
-    [Entity.GAME_SELECTOR]: undefined,
-    [Entity.ROUND_MANAGER]: undefined,
-    [Entity.THROW_MANAGER]: undefined,
-    [Entity.SETUP_HANDLER]: undefined,
-    [Entity.PLAYER_INPUT]: undefined,
-    [Entity.DARTBOARD]: undefined,
+let sockets: Partial<Record<ClientTopic, Socket>> = {
+    [Topic.SCORE_BOARD]: undefined,
+    [Topic.PLAYER_MANAGER]: undefined,
+    [Topic.GAME_SELECTOR]: undefined,
+    [Topic.ROUND_MANAGER]: undefined,
+    [Topic.THROW_MANAGER]: undefined,
+    [Topic.SETUP_HANDLER]: undefined,
+    [Topic.PLAYER_INPUT]: undefined,
+    [Topic.DARTBOARD]: undefined,
 }
 
-const getSocket = (entity: ClientEntity) => {
+const getSocket = (entity: ClientTopic) => {
   if (sockets[entity]) {
     return sockets[entity]
   }
@@ -50,7 +50,7 @@ type UseSocketParams<
   TEmitEvent extends FromClientEvent,
   TReceiveEvent extends ToClientEvent
 > = ({
-  entity: ClientEntity,
+  entity: ClientTopic,
   onEvent?: (event: TReceiveEvent, cb: EmitFn<TEmitEvent>) => void
 })
 
@@ -73,7 +73,7 @@ export const useSocket = <
       CHANNEL_NAME, {
         action: topic,
         source: entity,
-        target: Entity.CONTROLLER,
+        target: Topic.CONTROLLER,
         payload
       })
   }, [entity, socket])

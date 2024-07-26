@@ -1,20 +1,20 @@
-import { Entity } from '../common'
+import { Topic } from '../common'
 import { GenericEvent } from './utils'
 import { GetStateEvent, NotifyAppStateChangeEvent} from './utils'
 
 type FromEvent<TAction extends string, TPayload> = GenericEvent<
   TAction,
   TPayload,
-  Entity.ROUND_MANAGER,
-  Entity.CONTROLLER
+  Topic.ROUND_MANAGER,
+  Topic.CONTROLLER
 >
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type ToEvent<TAction extends string, TPayload> = GenericEvent<
   TAction,
   TPayload,
-  Entity.CONTROLLER,
-  Entity.ROUND_MANAGER
+  Topic.CONTROLLER,
+  Topic.ROUND_MANAGER
 >
 
 export type FromRoundManagerEvent = 
@@ -26,12 +26,12 @@ export type FromRoundManagerEvent =
     'FINISH_ROUND',
     undefined
   > |
-  GetStateEvent<Entity.ROUND_MANAGER>
+  GetStateEvent<Topic.ROUND_MANAGER>
 
 export type ToRoundManagerEvent =
   ToEvent<
     'WAIT_TO_START_ROUND',
     undefined
   > |
-  NotifyAppStateChangeEvent<Entity.ROUND_MANAGER>
+  NotifyAppStateChangeEvent<Topic.ROUND_MANAGER>
 

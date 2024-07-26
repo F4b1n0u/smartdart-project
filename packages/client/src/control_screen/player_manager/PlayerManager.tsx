@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 import styled from 'styled-components';
 import PlayerComponent from './Player';
 import Webcam from 'react-webcam';
-import { Entity, Player } from '../../../../shared/src/types/common';
+import { Topic, Player } from '../../../../shared/src/types/common';
 import { useSocketState } from '../../useSocketState';
 import { useSocketEmit } from '../../useSocketEmit';
 import { FromPlayerManagerEvent } from '../../../../shared/src/types/events/PlayerManagerEvent';
@@ -47,17 +47,15 @@ const WebcamContainer = styled.div`
 const usePlayerManager = () => {
   // TODO add a useSocket at the root of every client and rely on it to avoid to have to pass down the entity every time
   const { state, isLoaded } = useSocketState<
-    Entity.PLAYER_MANAGER,
+    Topic.PLAYER_MANAGER,
     Array<Player>
-  >(Entity.PLAYER_MANAGER, 'players')
+  >(Topic.PLAYER_MANAGER, 'players')
   
-  const emit = useSocketEmit<
+  const { emit } = useSocketEmit<
     FromPlayerManagerEvent
-  >(Entity.PLAYER_MANAGER)
+  >(Topic.PLAYER_MANAGER)
 
   const players = state || []
-
-
 
   const addPlayer = useCallback(({ name, photo }: Omit<Player, 'id'>) => {
     if (name.trim() && photo) {
@@ -137,9 +135,6 @@ const PlayerManagement = () => {
           ))}
         </PlayerListWrapper>
       )}
-      
-      <button>Dartboard</button>
-      <button>Settings</button>
     </PlayerManagementWrapper>
   );
 };

@@ -1,0 +1,32 @@
+{
+  "name": "smartdart-games",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+  },
+  "dependencies": {
+    "@pixi/events": "^7.4.2",
+    "@pixi/react": "^7.1.2",
+    "lodash": "^4.17.21",
+    "pixi.js": "^8.1.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^5.2.0",
+    "socket.io-client": "^4.7.5",
+    "styled-components": "^6.1.11",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.7",
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/uuid": "^10.0.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.6",
+    "prettier": "^3.3.3"
+  }
+}

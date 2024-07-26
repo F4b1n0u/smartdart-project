@@ -1,4 +1,4 @@
-import { Entity } from '../common'
+import { Topic } from '../common'
 import { GenericEvent } from './utils'
 import { GetStateEvent, NotifyAppStateChangeEvent} from './utils'
 
@@ -6,17 +6,17 @@ import { GetStateEvent, NotifyAppStateChangeEvent} from './utils'
 type FromEvent<TAction extends string, TPayload> = GenericEvent<
   TAction,
   TPayload,
-  Entity.SETUP_HANDLER,
-  Entity.CONTROLLER
+  Topic.SETUP_HANDLER,
+  Topic.CONTROLLER
 >
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type ToEvent<TAction extends string, TPayload> = GenericEvent<
   TAction,
   TPayload,
-  Entity.CONTROLLER,
-  Entity.SETUP_HANDLER
+  Topic.CONTROLLER,
+  Topic.SETUP_HANDLER
 >
 
-export type FromSetupManagerEvent = GetStateEvent<Entity.SETUP_HANDLER>
-export type ToSetupManagerEvent = NotifyAppStateChangeEvent<Entity.SETUP_HANDLER>
+export type FromSetupManagerEvent = GetStateEvent<Topic.SETUP_HANDLER>
+export type ToSetupManagerEvent = NotifyAppStateChangeEvent<Topic.SETUP_HANDLER>
