@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 import { get } from 'lodash';
 import { Socket } from 'socket.io-client'
-import { Subject } from 'rxjs'
+import { BehaviorSubject, SubjectLike } from 'rxjs'
 import { useCallback, useEffect, useState, useMemo } from 'react';
 import { AppState, Entity, Topic, Client, ClientEmitter, ClientReceiver, Emitter } from '../../../shared/src/types/common';
 import { FromClientEvent } from '../../../shared/src/types/events/utils/FromClientEvent';
@@ -65,8 +65,6 @@ const useSocket = <
     [entity]
   )
 
-  const $events = useMemo(() => new Subject(), [socket])
-
   const emit = useCallback<EmitFn<TEmitEvent>>(event => {
     socket.emit(
       CHANNEL_NAME, {
@@ -86,7 +84,6 @@ const useSocket = <
 
       if (receiver === entity) {
         onEvent(event, emit)
-        $events.next(event)
       }
     });
 
@@ -97,8 +94,7 @@ const useSocket = <
 
   return {
     emitHandler,
-    emit,
-    $events
+    emit
   }
 }
 
@@ -114,12 +110,19 @@ export const useSocketState = <
   TState extends ValuesOf<AppState>,  // TODO the value of the path should define the State type
 >(
   receiver: ClientReceiver,
-  path: string
-) => {
+  path: string,
+  defaultWhileLoading?: TState
+): [
+  boolean,
+  TState | undefined,
+  SubjectLike<TState>
+] => {
   const [isLoaded, setIsLoaded] = useState<boolean>(false)
-  const [state, setState] = useState<TState>()
+  const [state, setState] = useState<TState>(defaultWhileLoading as TState)
 
-  const { emit, $events } = useSocket<
+  const $states = useMemo(() => new BehaviorSubject<TState>(defaultWhileLoading as TState), [path])
+
+  const { emit } = useSocket<
     RequestFullAppStateEvent,
     // TODO check why the following does not work
     // NotifyAppStateChangeEvent<TTopic>
@@ -128,7 +131,11 @@ export const useSocketState = <
     entity: receiver,
     onEvent: ({ action, payload }) => {
       if (action === 'NOTIFY_STATE_CHANGE') {
-        setState(get(payload, path))
+        const value = get(payload, path)
+        
+        setState(value)
+        $states.next(value)
+
         setIsLoaded(true)
       }
     }
@@ -142,9 +149,9 @@ export const useSocketState = <
     })
   }, [emit])
 
-  return {
-    state,
-    $events,
+  return [
     isLoaded,
-  }
+    state,
+    $states,
+  ]
 }

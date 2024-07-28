@@ -1,8 +1,8 @@
-import { GAMES_CONFIG_MAP } from '../../../../games/src/constants'
-import { GameId } from '../../../../shared/src/types/common'
+import { GAMES_CONFIG_MAP } from '../../../../../games/src/constants'
+import { GameId } from '../../../../../shared/src/types/common'
 import { useCommandSocketEmit } from '../useCommandSocket'
-import { Topic } from '../../../../shared/src/types/common'
-import { FromGamesEvent } from '../../../../shared/src/types/events/GamesEvent'
+import { Topic } from '../../../../../shared/src/types/common'
+import { FromGamesEvent } from '../../../../../shared/src/types/events/DefaultGamesEvent'
 
 export const GameSelector = () => {
   const { emitHandler } = useCommandSocketEmit<FromGamesEvent>()

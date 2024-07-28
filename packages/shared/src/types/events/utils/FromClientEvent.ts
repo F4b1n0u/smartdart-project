@@ -1,5 +1,5 @@
 import { FromDartBoardEvent } from '../DartBoardEvent'
-import { FromGamesEvent } from '../GamesEvent'
+import { FromGamesEvent } from '../DefaultGamesEvent'
 import { FromDPadEvent } from '../DPadEvent'
 import { FromPlayersEvent } from '../PlayersEvent'
 import { FromRoundEvent } from '../RoundEvent'

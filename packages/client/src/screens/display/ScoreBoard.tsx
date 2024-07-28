@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import VirtualDartboard from '../shared/virtual_dartboard/VirtualDartboard'
-import { Hit } from '../types'
-import { useSocket } from '../utils/useSocket'
-import { Topic } from '../../../shared/src/types/common'
-import { StateEvent, DartboardEvent, ControllerEvent} from '../../../shared/src/types/events/'
+import VirtualDartboard from '../utils/VirtualDartboard'
+import { Hit } from '../../types'
+import { useSocket } from '../../utils/useSocket'
+import { Topic } from '../../../../shared/src/types/common'
+import { StateEvent, DartboardEvent, ControllerEvent} from '../../../../shared/src/types/events'
 import { useSocketState } from '../utils/useSocketState'
 const position = { x: 400, y: 400 }
 

@@ -1,8 +1,8 @@
-import { useSocket } from '../../utils/useSocket'
+import { useSocket } from '../../../utils/useSocket'
 
-import VirtualDartboard, { touchableRadiiPercents } from '../../shared/virtual_dartboard/VirtualDartboard'
+import VirtualDartboard, { touchableRadiiPercents } from '../../utils/VirtualDartboard'
 import { useCallback } from 'react'
-import { Topic, Location } from '../../../../shared/src/types/common'
+import { Topic, Location } from '../../../../../shared/src/types/common'
 import { FromRoundManagerEvent, ToRoundManagerEvent } from '../../../../shared/src/types/events/RoundManagerEvent'
 
 function RoundManager() {

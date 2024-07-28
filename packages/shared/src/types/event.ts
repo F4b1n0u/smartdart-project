@@ -1,9 +1,8 @@
-import { Client, Topic } from './common'
+import { Client, Entity, Topic } from './common'
 
 import {
   FromDartBoardEvent,
   FromDPadEvent,
-  FromGamesEvent,
   FromPlayersEvent,
   FromRoundEvent,
   FromScoreEvent,
@@ -14,7 +13,6 @@ import {
   
   ToDartBoardEvent,
   ToDPadEvent,
-  ToGamesEvent,
   ToPlayersEvent,
   ToRoundEvent,
   ToScoreEvent,
@@ -23,7 +21,14 @@ import {
 } from './events'
 
 
-export type GenericEvent<TAction extends string, TPayload, TSource extends Topic, TTarget extends Topic > = {
+export type GenericEvent<
+  TTopic extends Topic,
+  TAction extends string,
+  TPayload,
+  TSource extends Entity,
+  TTarget extends Entity
+> = {
+  topic: TTopic,
   action: TAction;
   payload: TPayload;
   source: TSource;
@@ -34,7 +39,6 @@ export type ServerToClientEvent =
   StateChangeFromControllerToClient<Client> |
   ToDartBoardEvent |
   ToDPadEvent |
-  ToGamesEvent |
   ToPlayersEvent |
   ToRoundEvent |
   ToScoreEvent |
@@ -44,7 +48,6 @@ export type ServerToClientEvent =
 export type ClientToServerEvents = 
   FromDartBoardEvent |
   FromDPadEvent |
-  FromGamesEvent |
   FromPlayersEvent |
   FromRoundEvent |
   FromScoreEvent |

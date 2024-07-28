@@ -1,6 +1,6 @@
-import { Entity } from '../../../shared/src/types/common'
-import { FromClientEvent } from '../../../shared/src/types/events/utils/FromClientEvent'
-import { useSocketEmit, useSocketState } from '../utils/useEntitySocket'
+import { Entity } from '../../../../shared/src/types/common'
+import { FromClientEvent } from '../../../../shared/src/types/events/utils/FromClientEvent'
+import { useSocketEmit, useSocketState } from '../../utils/useEntitySocket'
 
 export const useDPadSocketEmit = <
 TFromClientEvent extends FromClientEvent,

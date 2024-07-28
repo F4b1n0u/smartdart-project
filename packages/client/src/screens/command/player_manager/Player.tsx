@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Player } from '../../../../shared/src/types/common';
+import { Player } from '../../../../../shared/src/types/common';
 
 const CardWrapper = styled.div`
   display: flex;

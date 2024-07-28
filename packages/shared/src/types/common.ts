@@ -24,7 +24,8 @@ export enum Topic {
   THROWS = 'THROWS',
   SETUP = 'SETUP',
   D_PAD = 'D_PAD',
-  
+  GAME = 'GAME',
+
   STATE = 'STATE',
 }
 

@@ -2,9 +2,9 @@ import { useState, useCallback, useRef } from 'react';
 import styled from 'styled-components';
 import PlayerComponent from './Player';
 import Webcam from 'react-webcam';
-import { Topic, Player } from '../../../../shared/src/types/common';
+import { Topic, Player } from '../../../../../shared/src/types/common';
 import { useCommandSocketState, useCommandSocketEmit } from '../useCommandSocket';
-import { FromPlayersEvent } from '../../../../shared/src/types/events/PlayersEvent';
+import { FromPlayersEvent } from '../../../../../shared/src/types/events/PlayersEvent';
 
 const PlayerManagementWrapper = styled.div`
   display: flex;
@@ -44,13 +44,11 @@ const WebcamContainer = styled.div`
 `;
 
 const usePlayerManager = () => {
-  const { state, isLoaded } = useCommandSocketState<
+  const [arePlayersLoaded, players] = useCommandSocketState<
     Array<Player>
-  >('players')
+  >('players', [])
   
   const { emit } = useCommandSocketEmit<FromPlayersEvent>()
-
-  const players = state || []
 
   const addPlayer = useCallback(({ name, photo }: Omit<Player, 'id'>) => {
     if (name.trim() && photo) {
@@ -71,8 +69,8 @@ const usePlayerManager = () => {
   };
 
   return {
-    isLoaded,
-    players,
+    arePlayersLoaded,
+    players: players,
     addPlayer,
     removePlayer,
   }
@@ -87,7 +85,7 @@ const PlayerManagement = () => {
     addPlayer,
     removePlayer,
     players,
-    isLoaded
+    arePlayersLoaded
   } = usePlayerManager()
 
   const handleClickAddPlayer = useCallback(() => {
@@ -127,7 +125,7 @@ const PlayerManagement = () => {
         />
         <button onClick={handleClickAddPlayer}>Add</button>
       </InputWrapper>
-      {isLoaded && (
+      {arePlayersLoaded && (
         <PlayerListWrapper>
           {players.map(player => (
             <PlayerComponent

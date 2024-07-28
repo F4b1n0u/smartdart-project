@@ -150,7 +150,7 @@ const ZoneComponent = ({
   )
 }
 
-type VirtualDartboardProps = {
+type VirtualDartBoardProps = {
   center: Position,
   hits?: Array<Hit>,
   onZoneBeenHit?: (dart: Location) => void,
@@ -160,7 +160,7 @@ type VirtualDartboardProps = {
   scale: number
 }
 
-const VirtualDartboard = ({
+const VirtualDartBoard = ({
   center,
   onZoneBeenHit = () => {},
   radiiPercents = realRadiiPercents,
@@ -168,7 +168,7 @@ const VirtualDartboard = ({
   height,
   width,
   scale
-}: VirtualDartboardProps) => {
+}: VirtualDartBoardProps) => {
   const zones = useMemo(() => {
     return Array(totalSegments).fill('').map((_, index) => {
       return multipliers.map(multiplier => {
@@ -200,4 +200,4 @@ const VirtualDartboard = ({
   );
 }
 
-export default VirtualDartboard;
+export default VirtualDartBoard;

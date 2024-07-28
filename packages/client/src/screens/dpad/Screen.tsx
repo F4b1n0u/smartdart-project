@@ -1,9 +1,9 @@
 import { useDPadSocketEmit } from './useDPadSocket';
 import { DPad } from './DPad';
-import { DPadDirection, Topic } from '../../../shared/src/types/common'
-import { FromDPadEvent } from '../../../shared/src/types/events/DPadEvent';
+import { DPadDirection, Topic } from '../../../../shared/src/types/common'
+import { FromDPadEvent } from '../../../../shared/src/types/events/DPadEvent';
 
-function PlayerInput() {
+function Screen() {
   const { emitHandler } = useDPadSocketEmit<FromDPadEvent>()
 
   return (
@@ -35,4 +35,4 @@ function PlayerInput() {
   );
 }
 
-export default PlayerInput;
+export default Screen;

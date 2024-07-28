@@ -1,8 +1,8 @@
-import { useSocket } from '../../utils/useSocket'
-import { useDartBoard } from '../../dartboard/useDartBoard'
-import VirtualDartboard, { touchableRadiiPercents } from '../../shared/virtual_dartboard/VirtualDartboard'
+import { useSocket } from '../../../utils/useSocket'
+import { useDartBoard } from '../../../dartboard/useDartBoard'
+import VirtualDartboard, { touchableRadiiPercents } from '../../utils/VirtualDartboard'
 import { useCallback } from 'react'
-import { Topic, Location } from '../../../../shared/src/types/common'
+import { Topic, Location } from '../../../../../shared/src/types/common'
 import { FromThrowEvent, ToThrowEvent } from '../../../../shared/src/types/events/ThrowsEvent'
 
 function ThrowSimulator() {

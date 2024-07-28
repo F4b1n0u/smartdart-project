@@ -1,6 +1,6 @@
 export * from './DPadEvent'
 export * from './DartBoardEvent'
-export * from './GamesEvent'
+export * from './DefaultGamesEvent'
 export * from './PlayersEvent'
 export * from './RoundEvent'
 export * from './ScoreEvent'

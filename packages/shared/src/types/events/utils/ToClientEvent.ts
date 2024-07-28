@@ -1,5 +1,5 @@
 import { ToDartBoardEvent } from '../DartBoardEvent'
-import { ToGamesEvent } from '../GamesEvent'
+import { ToGamesEvent } from '../DefaultGamesEvent'
 import { ToDPadEvent } from '../DPadEvent'
 import { ToPlayersEvent } from '../PlayersEvent'
 import { ToRoundEvent } from '../RoundEvent'
