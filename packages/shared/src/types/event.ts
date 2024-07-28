@@ -1,11 +1,27 @@
-import { Topic } from './common'
+import { Client, Topic } from './common'
 
-import { ControlScreenEvent } from './ControlScreenEvent'
-import { DisplayScreenEvent } from './DisplayScreenEvent'
-import { PlayerInputEvent } from './PlayerInputEvent'
-import { StateChangeEvent } from './StateChangeEvent'
+import {
+  FromDartBoardEvent,
+  FromDPadEvent,
+  FromGamesEvent,
+  FromPlayersEvent,
+  FromRoundEvent,
+  FromScoreEvent,
+  FromSetupEvent,
+  FromThrowEvent,
 
-import { ControllerEvent } from './ControllerEvent'
+  StateChangeFromControllerToClient,
+  
+  ToDartBoardEvent,
+  ToDPadEvent,
+  ToGamesEvent,
+  ToPlayersEvent,
+  ToRoundEvent,
+  ToScoreEvent,
+  ToSetupEvent,
+  ToThrowEvent
+} from './events'
+
 
 export type GenericEvent<TAction extends string, TPayload, TSource extends Topic, TTarget extends Topic > = {
   action: TAction;
@@ -15,9 +31,23 @@ export type GenericEvent<TAction extends string, TPayload, TSource extends Topic
 };
 
 export type ServerToClientEvent =
-  ControlScreenEvent |
-  DisplayScreenEvent |
-  PlayerInputEvent |
-  StateChangeEvent
+  StateChangeFromControllerToClient<Client> |
+  ToDartBoardEvent |
+  ToDPadEvent |
+  ToGamesEvent |
+  ToPlayersEvent |
+  ToRoundEvent |
+  ToScoreEvent |
+  ToSetupEvent |
+  ToThrowEvent 
 
-export type ClientToServerEvents = ControllerEvent
+export type ClientToServerEvents = 
+  FromDartBoardEvent |
+  FromDPadEvent |
+  FromGamesEvent |
+  FromPlayersEvent |
+  FromRoundEvent |
+  FromScoreEvent |
+  FromSetupEvent |
+  FromThrowEvent |
+  StateChangeFromControllerToClient<Client>

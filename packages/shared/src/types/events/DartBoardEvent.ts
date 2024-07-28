@@ -1,37 +1,20 @@
-import { Topic, Location } from '../common'
-import { GenericEvent } from './utils'
-import { GetStateEvent, NotifyAppStateChangeEvent} from './utils'
-
-type FromEvent<TAction extends string, TPayload> = GenericEvent<
-  TAction,
-  TPayload,
-  Topic.DARTBOARD,
-  Topic.CONTROLLER
->
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type ToEvent<TAction extends string, TPayload> = GenericEvent<
-  TAction,
-  TPayload,
-
-  Topic.CONTROLLER,
-  Topic.DARTBOARD
->
+import { Location } from '../common'
+import { FromDartboardEvent, RequestFullAppStateEvent, NotifyAppStateChangeEvent } from './utils/utils'
 
 export type FromDartBoardEvent = 
-  FromEvent<
+  FromDartboardEvent<
     'NOTIFY_CONNECTION_ESTABLISHED',
     undefined
   > |
-  FromEvent<
+  FromDartboardEvent<
     'NOTIFY_BUTTON_PRESSED',
     undefined
   > |
-  FromEvent<
+  FromDartboardEvent<
     'REGISTER_THROW',
     Location
   > |
-  GetStateEvent<Topic.DARTBOARD>
+  RequestFullAppStateEvent
 
-export type ToDartBoardEvent = NotifyAppStateChangeEvent<Topic.DARTBOARD>
+export type ToDartBoardEvent = NotifyAppStateChangeEvent
   

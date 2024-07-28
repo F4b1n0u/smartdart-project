@@ -1,4 +1,4 @@
-import { GameConfig } from "../types"
+import { GameConfig } from '../types'
 
 import { Preview } from './Preview'
 import { RunningGame } from './RunningGame'

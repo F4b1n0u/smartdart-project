@@ -1,44 +1,33 @@
-export enum Topic {
-  // physical unicorn dartboard
-  DARTBOARD = "DARTBOARD",
-
-  // projection on the wall
-  SCORE_BOARD = "SCORE_BOARD",
-  
-  // tablet close the the player
-  GAME_SELECTOR = "GAME_SELECTOR",
-  PLAYER_MANAGER = "PLAYER_MANAGER",
-  ROUND_MANAGER = "ROUND_MANAGER",
-  THROW_MANAGER = "THROW_MANAGER",
-  SETUP_HANDLER = "SETUP_HANDLER",
-  
-  // dedicated mobile per player
-  PLAYER_INPUT = "PLAYER_INPUT",
-
-  // server receiving/emitting from/to clients
-  CONTROLLER = "CONTROLLER"
+export enum Entity {
+  DISPLAY = 'DISPLAY', // projector
+  COMMAND = 'COMMAND', // tablet
+  DARTBOARD = 'DARTBOARD', // unicorn dartboard
+  DPAD = 'DPAD', // player dpad
+  CONTROLLER = 'CONTROLLER' // server
 }
 
-export type ClientTopic =
-  Topic.SCORE_BOARD |
-  Topic.PLAYER_MANAGER |
-  Topic.GAME_SELECTOR |
-  Topic.ROUND_MANAGER |
-  Topic.THROW_MANAGER |
-  Topic.SETUP_HANDLER |
-  Topic.PLAYER_INPUT |
-  Topic.DARTBOARD
+export type Emitter = Entity.CONTROLLER | Entity.COMMAND | Entity.DARTBOARD | Entity.DPAD
+export type Receiver = Entity.CONTROLLER | Entity.COMMAND | Entity.DISPLAY | Entity.DPAD
 
-export const CLIENT_TOPICS: Array<ClientTopic> = [
-  Topic.SCORE_BOARD,
-  Topic.PLAYER_MANAGER,
-  Topic.GAME_SELECTOR,
-  Topic.ROUND_MANAGER,
-  Topic.THROW_MANAGER,
-  Topic.SETUP_HANDLER,
-  Topic.PLAYER_INPUT,
-  Topic.DARTBOARD
-]
+export type Client = Entity.COMMAND | Entity.DISPLAY | Entity.DARTBOARD | Entity.DPAD
+export type Server = Entity.CONTROLLER
+
+export type ClientEmitter = Client & Emitter
+export type ClientReceiver = Client & Receiver
+
+export enum Topic {
+  DARTBOARD = 'DARTBOARD',
+  SCORE = 'SCORE_BOARD',
+  GAMES = 'GAMES',
+  PLAYERS = 'PLAYERS',
+  ROUNDS = 'ROUND',
+  THROWS = 'THROWS',
+  SETUP = 'SETUP',
+  D_PAD = 'D_PAD',
+  
+  STATE = 'STATE',
+}
+
 export enum Multiplier {
   SINGLE_SLIM = 'SINGLE_SLIM',
   SINGLE_FAT = 'SINGLE_FAT',
@@ -53,9 +42,6 @@ export type Location = {
 
 export type Throw = {
   location?: Location
-  // TODO add a getter ??
-  // could rely on location presence, to avoid redundancy
-  hasLanded: boolean
 }
 
 export type Player = {
@@ -90,7 +76,7 @@ export type AppState = {
   
   selectedGameId: GameId
 
-  // relevant only if app.status === 'PLAYING_GAME'
+  // relevant only if status === 'PLAYING_GAME'
   // must be reset if not in this status
   game: unknown,
   

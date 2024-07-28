@@ -7,14 +7,14 @@ import cors from "cors";
 import { PORT_EXPRESS, PORT_SOCKET_IO , HOST_CORS } from "./config";
 import { CHANNEL_NAME } from "@shared/constants";
 
-import type { AppState, ClientTopic } from "@shared/types/common";
-import type { ToClientEvent } from "@shared/types/events/ToClientEvent";
-import type { FromClientEvent } from "@shared/types/events/FromClientEvent";
+import type { AppState, Client, ClientReceiver } from "@shared/types/common";
+import type { ToClientEvent } from "@shared/types/events/utils/ToClientEvent";
+import type { FromClientEvent } from "@shared/types/events/utils/FromClientEvent";
 import type { ClientToServerMessages,
   InterServerMessages,
   ServerToClientMessages,
   Sockets, } from "@shared/types/socketio";
-import { Topic, CLIENT_TOPICS, GameId } from '@shared/types/common';
+import { Topic, GameId, Entity } from '@shared/types/common';
 
 
 const app = express();
@@ -40,7 +40,7 @@ const io = new Server<
 // Use CORS middleware for Express
 app.use(cors(CORS_SETTINGS));
 
-const receiver = Topic.CONTROLLER;
+const receiver = Entity.CONTROLLER;
 const sockets: Sockets = {};
 
 // TODO handle this much better than that !
@@ -56,11 +56,13 @@ let state: AppState = {
 
 io.on("connection", (socket) => {
   const broadcastState = (state: AppState) => {
-    Object.keys(sockets).forEach((target) => {
+    const targets = Object.keys(sockets)
+    targets.forEach((target) => {
       emit({
-        target: target as ClientTopic,
+        topic: Topic.STATE,
         action: 'NOTIFY_STATE_CHANGE',
-        payload: state
+        payload: state,
+        target: target as ClientReceiver
       })
     })
   }
@@ -70,24 +72,26 @@ io.on("connection", (socket) => {
     broadcastState(state)
   }
 
-  const emitterId = socket.handshake.query.emitter as Topic;
+  const emitterId = socket.handshake.query.emitter as Client;
   console.log("Incoming connection from: ", emitterId);
 
   sockets[emitterId] = socket;
 
   const emit = ({
-      target, action, payload
+    topic, action, payload, target
   }: Omit<ToClientEvent, 'source'>
   ) => {
-    const event = {
+    const event= {
       action,
-      source: Topic.CONTROLLER,
-      target,
       payload,
-    };
-    console.log(`emits to ${target} -> `, event);
+      topic,
 
-    const socket = sockets[target];
+      target,
+      source: Entity.CONTROLLER,
+    };
+    console.log(`emits to ${event.target} -> `, event);
+
+    const socket = sockets[target as Client];
 
     if (socket) {
       // TODO check why I had to do this cast
@@ -100,27 +104,29 @@ io.on("connection", (socket) => {
   function handleNewMessage(event: FromClientEvent) {
     console.log("receives <- ", event);
 
-    const { action, source, target } = event;
+    const { topic, action, source, target } = event;
 
     if (target !== receiver) {
+      // we do not handle event forwarding yet (if ever), only event that are for the controller (server)
       return;
     }
 
     if (action === 'REQUEST_FULL_APP_STATE') {
       emit({
-        target: source,
+        topic: Topic.STATE,
+        target: source as ClientReceiver,
         action: 'NOTIFY_STATE_CHANGE',
         payload: state
       })
     }
 
-    switch (source) {
-      case Topic.PLAYER_INPUT: {
-        
+    switch (topic) {
+      case Topic.D_PAD: {
+        // TODO implement the dpad for non playing players
         break;
       }
 
-      case Topic.PLAYER_MANAGER: {
+      case Topic.PLAYERS: {
         switch (action) {
           case 'ADD_PLAYER': {
             const { payload } = event
@@ -149,7 +155,7 @@ io.on("connection", (socket) => {
         break;
       }
 
-      case Topic.THROW_MANAGER: {
+      case Topic.THROWS: {
         switch (action) {
           case 'MISS_THROW': {
             break;
@@ -172,9 +178,9 @@ io.on("connection", (socket) => {
         break;
       }
 
-      case Topic.GAME_SELECTOR: {
+      case Topic.GAMES: {
         switch (action) {
-          case 'FOCUS_GAME': {
+          case 'SELECT_GAME': {
             const { payload } = event
             updateState('selectedGameId', payload)
             break;

@@ -19,19 +19,19 @@ export type FromGameEvent<TGameState> =
     'TERMINATE_GAME',
     TGameState,
     ClientTopic,
-    Topic.CONTROLLER
+    Entity.CONTROLLER
   >
 
 export type ToGameEvent<TGameState> =
   GenericEvent<
     'ROUND_FINISHED',
     TGameState,
-    Topic.CONTROLLER,
+    Entity.CONTROLLER,
     ClientTopic
   > |
   GenericEvent<
     'DART_LANDED',
     TGameState,
-    Topic.CONTROLLER,
+    Entity.CONTROLLER,
     ClientTopic
   >

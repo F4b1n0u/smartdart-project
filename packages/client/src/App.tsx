@@ -1,8 +1,8 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import DisplayScreen from './display_screen/DisplayScreen';
-import ControlScreen from './control_screen/ControlScreen';
-import PlayerInput from './player_input/PlayerInput';
+import DisplayScreen from './display/DisplayScreen';
+import ControlScreen from './command/ControlScreen';
+import PlayerInput from './dpad/PlayerInput';
 
 const App = () => {
   return (
