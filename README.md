@@ -25,7 +25,7 @@ This is mostly to display a feedback of what is happening on the real dartboard 
 
 #### control Screen
 
-`open http://localhost:5173/control`
+`open http://localhost:5173/command`
 This is mostly for the user to be able to interact with the system
 
 - connect to a real dartboard
