@@ -13,6 +13,33 @@ import type { ClientToServerMessages,
   ServerToClientMessages,
   Sockets, } from "@shared/types/socketio";
 import { Topic, GameId, Entity } from '@shared/types/common';
+import { createLogger, format, transports } from 'winston';
+import util from 'util';
+
+const { combine, timestamp, printf, colorize } = format;
+const logFormat = printf(({ level, message, timestamp }) => {
+  return `${timestamp} [${level}]: ${message}`;
+});
+
+const logger = createLogger({
+  format: combine(
+    colorize(),
+    timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    logFormat
+  ),
+  transports: [
+    new transports.Console(),
+    new transports.File({ filename: 'errors.log', level: 'error' }),
+    new transports.File({ filename: 'combined.log' })
+  ]
+});
+
+const log = (level: string, ...args: any[]) => {
+  const formattedArgs = args.map(arg => 
+    typeof arg === 'object' ? util.inspect(arg, { depth: 2, colors: true }) : arg
+  ).join(' ');
+  logger.log(level, formattedArgs);
+};
 
 const app = express();
 const httpServer = createServer(app);
@@ -54,7 +81,7 @@ let state: AppState = {
 io.on("connection", (socket) => {
   
   const emitterId = socket.handshake.query.emitter as Client;
-  console.log("Incoming connection from: ", emitterId);
+  log('info', "Incoming connection from: ", emitterId);
 
   sockets[emitterId] = socket;
 
@@ -70,7 +97,7 @@ io.on("connection", (socket) => {
       target,
       source: Entity.CONTROLLER,
     };
-    console.log(`emits to ${event.target} -> `, event);
+    log('info', `emits to ${event.target} -> `, event);
 
     const socket = sockets[target as Client];
 
@@ -83,7 +110,7 @@ io.on("connection", (socket) => {
   };
 
   function handleNewMessage(event: FromClientEvent) {
-    console.log("receives <- ", event);
+    log('info', "receives <- ", event);
 
     const broadcastState = (state: AppState) => {
       const targets = Object.keys(sockets)
@@ -222,8 +249,8 @@ io.on("connection", (socket) => {
 });
 
 httpServer.listen(PORT_EXPRESS, () => {
-  console.log(`Express server running on port ${PORT_EXPRESS}`);
-  console.log("CORS_SETTINGS: ", CORS_SETTINGS);
+  log('info', `Express server running on port ${PORT_EXPRESS}`);
+  log('info', "CORS_SETTINGS: ", CORS_SETTINGS);
 });
 
 io.listen(PORT_SOCKET_IO)

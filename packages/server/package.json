@@ -6,7 +6,8 @@
     "fs": "^0.0.1-security",
     "http": "^0.0.1-security",
     "https": "^1.0.0",
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.7.5",
+    "winston": "^3.13.1"
   },
   "scripts": {
     "start": "dotenvx run -- ts-node -r tsconfig-paths/register src/index.ts",
