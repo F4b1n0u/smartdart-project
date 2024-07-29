@@ -6,16 +6,13 @@ import { Server } from "socket.io";
 import cors from "cors";
 import { PORT_EXPRESS, PORT_SOCKET_IO , HOST_CORS } from "./config";
 import { CHANNEL_NAME } from "@shared/constants";
-
-import type { AppState, Client, ClientReceiver } from "@shared/types/common";
-import type { ToClientEvent } from "@shared/types/events/utils/ToClientEvent";
-import type { FromClientEvent } from "@shared/types/events/utils/FromClientEvent";
+import type { AppState, Client, ClientReceiver, Player } from "@shared/types/common";
+import type { FromClientEvent, ToClientEvent } from "@shared/types/events/utils/ClientEvent";
 import type { ClientToServerMessages,
   InterServerMessages,
   ServerToClientMessages,
   Sockets, } from "@shared/types/socketio";
 import { Topic, GameId, Entity } from '@shared/types/common';
-
 
 const app = express();
 const httpServer = createServer(app);
@@ -55,23 +52,7 @@ let state: AppState = {
 }
 
 io.on("connection", (socket) => {
-  const broadcastState = (state: AppState) => {
-    const targets = Object.keys(sockets)
-    targets.forEach((target) => {
-      emit({
-        topic: Topic.STATE,
-        action: 'NOTIFY_STATE_CHANGE',
-        payload: state,
-        target: target as ClientReceiver
-      })
-    })
-  }
-
-  const updateState = (path: string, value: unknown) => {
-    state = set(state, path, value)
-    broadcastState(state)
-  }
-
+  
   const emitterId = socket.handshake.query.emitter as Client;
   console.log("Incoming connection from: ", emitterId);
 
@@ -81,7 +62,7 @@ io.on("connection", (socket) => {
     topic, action, payload, target
   }: Omit<ToClientEvent, 'source'>
   ) => {
-    const event= {
+    const event = {
       action,
       payload,
       topic,
@@ -104,6 +85,26 @@ io.on("connection", (socket) => {
   function handleNewMessage(event: FromClientEvent) {
     console.log("receives <- ", event);
 
+    const broadcastState = (state: AppState) => {
+      const targets = Object.keys(sockets)
+      targets.forEach((target) => {
+        emit({
+          topic: Topic.STATE,
+          action: 'NOTIFY_STATE_CHANGE',
+          payload: {
+            state,
+            lastEvent: event,
+          },
+          target: target as ClientReceiver
+        })
+      })
+    }
+
+    const updateState = (path: string, value: unknown) => {
+      state = set(state, path, value)
+      broadcastState(state)
+    }
+
     const { topic, action, source, target } = event;
 
     if (target !== receiver) {
@@ -116,8 +117,13 @@ io.on("connection", (socket) => {
         topic: Topic.STATE,
         target: source as ClientReceiver,
         action: 'NOTIFY_STATE_CHANGE',
-        payload: state
+        payload: {
+          state,
+          lastEvent: event
+        }
       })
+
+      return;
     }
 
     switch (topic) {
@@ -130,7 +136,8 @@ io.on("connection", (socket) => {
         switch (action) {
           case 'ADD_PLAYER': {
             const { payload } = event
-            const newPlayers = [
+
+            const newPlayers: Array<Player> = [
               ...state.players, {
                 id: uuidv4(),
                 name: payload.name,
@@ -146,7 +153,7 @@ io.on("connection", (socket) => {
             const { players } = state
             const { payload } = event
             
-            const newPlayers = players.filter(player => player.id !== payload.id);
+            const newPlayers: Array<Player> = players.filter(player => player.id !== payload.id);
             updateState('players', newPlayers)
 
             break;
@@ -187,11 +194,27 @@ io.on("connection", (socket) => {
           }
           case 'START_SELECTED_GAME': {
             updateState('status', 'PLAYING_GAME')
+
+            emit({
+              topic: Topic.GAME,
+              action: 'INITIALIZE',
+              payload: undefined,
+              target: Entity.COMMAND
+            })
             break;
           }
         }
+        break
       }
-      
+    
+      case Topic.GAME: {
+        switch(action) {
+          case 'UPDATE_GAME_STATE': {
+            const { payload } = event
+            updateState('game', payload)
+          }
+        }
+      }
     }
   }
 

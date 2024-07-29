@@ -1,19 +1,18 @@
-import { Client, Topic } from '../common'
+import { AppState, ClientReceiver, Topic } from '../common'
+import { FromClientEvent } from './utils/ClientEvent'
 import { FromControllerEvent } from './utils/utils'
 
 type StateChangeFromControllerTo<
-  TEntity extends Client,
+  TEntity extends ClientReceiver,
   TTopic extends Topic
 > = FromControllerEvent<
   TEntity,
   TTopic,
   'NOTIFY_STATE_CHANGE',
-  unknown
+  {
+    state: AppState,
+    lastEvent: FromClientEvent
+  }
 >
-export type StateChangeFromControllerToClient<TEntity extends Client> = 
-  StateChangeFromControllerTo<TEntity, Topic.GAMES> |
-  StateChangeFromControllerTo<TEntity, Topic.D_PAD> |
-  StateChangeFromControllerTo<TEntity, Topic.PLAYERS> |
-  StateChangeFromControllerTo<TEntity, Topic.ROUNDS> |
-  StateChangeFromControllerTo<TEntity, Topic.SCORE> |
-  StateChangeFromControllerTo<TEntity, Topic.DARTBOARD>
+export type StateChangeFromControllerToClient<TEntity extends ClientReceiver> = 
+  StateChangeFromControllerTo<TEntity, Topic.STATE>

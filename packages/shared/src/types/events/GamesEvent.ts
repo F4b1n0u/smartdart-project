@@ -1,7 +1,7 @@
 import { Topic, GameId } from '../common'
 import { FromCommandEvent, RequestFullAppStateEvent, NotifyAppStateChangeEvent } from './utils/utils'
 
-export type FromDefaultGamesEvent =
+export type FromGamesEvent =
   FromCommandEvent<
     Topic.GAMES,
     'SELECT_GAME',
@@ -12,17 +12,7 @@ export type FromDefaultGamesEvent =
     'START_SELECTED_GAME',
     undefined
   > |
-  FromCommandEvent<
-    Topic.GAMES,
-    'PAUSE_SELECTED_GAME',
-    undefined
-  >  |
-  FromCommandEvent<
-    Topic.GAMES,
-    'STOP_SELECTED_GAME',
-    undefined
-  > |
   RequestFullAppStateEvent
 
 
-export type ToDefaultGamesEvent = NotifyAppStateChangeEvent
+export type ToGamesEvent = NotifyAppStateChangeEvent

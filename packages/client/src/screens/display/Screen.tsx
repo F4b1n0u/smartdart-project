@@ -5,25 +5,21 @@ import { useSelectedGameConfig } from './useSelectedGameConfig'
 
 const Screen = () => {
   const { config, isConfigLoaded } = useSelectedGameConfig()
-
-  const [isAppStateLoaded, status]  = useDisplaySocketState<AppState['status']>('status') 
+  const [ isAppStateLoaded, status ]  = useDisplaySocketState<AppState['status']>('status') 
   
   if(isConfigLoaded && isAppStateLoaded) {
-    const { Preview: PreviewComponent, ScoreBoard } = config!
+    const { Preview, ScoreBoard } = config!
     switch(status) {
       case 'PLAYING_GAME': {
-        return <ScoreBoard />
-
-        break;
+        return <ScoreBoard useGameSocketState={useDisplaySocketState}/>
       }
 
       case 'READY_TO_PLAY': {
-        return <PreviewComponent />
+        return <Preview useGameSocketState={useDisplaySocketState}/>
         break;
       }
 
       case 'SETTING_UP': {
-
         return (
           <>
             Setting up

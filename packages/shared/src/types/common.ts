@@ -1,3 +1,5 @@
+import { FromClientEvent } from './events/utils/ClientEvent'
+
 export enum Entity {
   DISPLAY = 'DISPLAY', // projector
   COMMAND = 'COMMAND', // tablet
@@ -53,8 +55,8 @@ export type Player = {
 
 export enum GameId {
   GAME_A = 'GAME_A',
-  GAME_B = 'GAME_B',
-  GAME_C = 'GAME_C'
+  // GAME_B = 'GAME_B',
+  // GAME_C = 'GAME_C'
 }
 
 export enum DPadDirection {
@@ -68,7 +70,12 @@ export enum DPadDirection {
   RIGHT_UP = 'RIGHT_UP', 
 }
 
-export type AppState = {
+export type Round = {
+  playingPlayerId: Player['id'],
+  throws: Array<Throw>
+}
+
+export type AppState<TGameState = unknown> = {
   // high level status, wil lbe relied on on multiple clients/screens
   status:
     'READY_TO_PLAY' | // mainScreen: display preview of focused game  // controlScreen: display the carrousell
@@ -79,7 +86,7 @@ export type AppState = {
 
   // relevant only if status === 'PLAYING_GAME'
   // must be reset if not in this status
-  game: unknown,
+  game: TGameState,
   
   // always here and accessible at all time
   players: ReadonlyArray<Player>,
@@ -88,3 +95,15 @@ export type AppState = {
     status: 'ACTIVE' | 'INACTIVE'
   },
 }
+
+export type EmitFn<TEmitEvent extends FromClientEvent> = (
+  topic: FromClientEvent['topic'],
+  action: TEmitEvent['action'],
+  payload?: TEmitEvent['payload']
+) => void
+
+export type EmitHandlerFn<TEmitEvent extends FromClientEvent> = ({
+  topic,
+  action,
+  payload
+}: Pick<TEmitEvent, 'topic' | 'action' | 'payload'>) => () => void

@@ -3,11 +3,10 @@ import { get } from 'lodash';
 import { Socket } from 'socket.io-client'
 import { BehaviorSubject, SubjectLike } from 'rxjs'
 import { useCallback, useEffect, useState, useMemo } from 'react';
-import { AppState, Entity, Topic, Client, ClientEmitter, ClientReceiver, Emitter } from '../../../shared/src/types/common';
-import { FromClientEvent } from '../../../shared/src/types/events/utils/FromClientEvent';
-import { ToClientEvent } from '../../../shared/src/types/events/utils/ToClientEvent';
-import { RequestFullAppStateEvent, NotifyAppStateChangeEvent } from '../../../shared/src/types/events/utils/utils';
-import { CHANNEL_NAME } from '../../../shared/src/constants';
+import { AppState, Entity, Topic, Client, ClientEmitter, ClientReceiver } from './types/common';
+import { FromClientEvent, ToClientEvent } from './types/events/utils/ClientEvent';
+import { RequestFullAppStateEvent, NotifyAppStateChangeEvent } from './types/events/utils/utils';
+import { CHANNEL_NAME } from './constants';
 
 
 // TODO see to rely on .env, ideally the same one (server/client)
@@ -28,13 +27,6 @@ const getSocket = (emitter: Client) => {
     return sockets[emitter]
   }
 
-  const alreadyUseEntities = Object.keys(sockets).filter((entity) => entity !== Entity.DARTBOARD)
-  if (alreadyUseEntities.length > 0) {
-    const currentlyUsedEntity = alreadyUseEntities[0]
-    if (currentlyUsedEntity !== emitter) {
-      throw new Error (`this app is already configured to work with "${currentlyUsedEntity}", and not more than one entity per instance is allowed, this is most likely due to the fact you are using use${emitter}Socket in the "${alreadyUseEntities}" package, try to use use${alreadyUseEntities}Socket instead`)
-    }
-  }
   const socket = io(
     `http://${SOCKET_IO_HOST}:${SOCKET_IO_PORT}`,
     { query: { emitter } }
@@ -115,12 +107,17 @@ export const useSocketState = <
 ): [
   boolean,
   TState | undefined,
-  SubjectLike<TState>
+  SubjectLike<TState>,
+  // TODO can it also be ToClientEvent ???
+  FromClientEvent | undefined,
+  SubjectLike<FromClientEvent | undefined>,
 ] => {
   const [isLoaded, setIsLoaded] = useState<boolean>(false)
   const [state, setState] = useState<TState>(defaultWhileLoading as TState)
+  const [event, setEvent] = useState<FromClientEvent | undefined>(undefined)
 
-  const $states = useMemo(() => new BehaviorSubject<TState>(defaultWhileLoading as TState), [path])
+  const $state = useMemo(() => new BehaviorSubject<TState>(defaultWhileLoading as TState), [path])
+  const $event = useMemo(() => new BehaviorSubject<FromClientEvent | undefined>(undefined), [])
 
   const { emit } = useSocket<
     RequestFullAppStateEvent,
@@ -131,10 +128,14 @@ export const useSocketState = <
     entity: receiver,
     onEvent: ({ action, payload }) => {
       if (action === 'NOTIFY_STATE_CHANGE') {
-        const value = get(payload, path)
+        const { state, lastEvent } = payload
+        const value = get(state, path)
         
         setState(value)
-        $states.next(value)
+        $state.next(value)
+
+        setEvent(lastEvent)
+        $event.next(lastEvent)
 
         setIsLoaded(true)
       }
@@ -152,6 +153,8 @@ export const useSocketState = <
   return [
     isLoaded,
     state,
-    $states,
+    $state,
+    event,
+    $event
   ]
 }

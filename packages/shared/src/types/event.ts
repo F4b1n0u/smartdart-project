@@ -1,4 +1,4 @@
-import { Client, Entity, Topic } from './common'
+import { Client, ClientEmitter, ClientReceiver, Entity, Topic } from './common'
 
 import {
   FromDartBoardEvent,
@@ -36,7 +36,7 @@ export type GenericEvent<
 };
 
 export type ServerToClientEvent =
-  StateChangeFromControllerToClient<Client> |
+  StateChangeFromControllerToClient<ClientReceiver> |
   ToDartBoardEvent |
   ToDPadEvent |
   ToPlayersEvent |
@@ -52,5 +52,4 @@ export type ClientToServerEvents =
   FromRoundEvent |
   FromScoreEvent |
   FromSetupEvent |
-  FromThrowEvent |
-  StateChangeFromControllerToClient<Client>
+  FromThrowEvent

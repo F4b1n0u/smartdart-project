@@ -11,6 +11,6 @@
     "sourceMap": true,
     "baseUrl": ".",
   },
-  "include": ["src/**/*", "global.d.ts"],
+  "include": ["src/**/*", "global.d.ts", "../shared/src/useSocket.ts"],
   "exclude": ["node_modules"]
 }

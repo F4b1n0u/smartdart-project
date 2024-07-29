@@ -1,5 +1,5 @@
 import { Entity } from '../../../../shared/src/types/common'
-import { useSocketState } from '../../utils/useEntitySocket'
+import { useSocketState } from '../../../../shared/src/useEntitySocket'
 
 export const useDisplaySocketState = <
   TState,

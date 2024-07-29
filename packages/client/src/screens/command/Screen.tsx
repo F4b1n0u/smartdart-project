@@ -1,38 +1,31 @@
-import { useDartBoard } from '../../dartboard/useDartBoard'
-import PlayerManager from './player_manager/PlayerManager'
-import { GameSelector } from './game_selector/GameSelector'
-import { useCommandSocketState } from './useCommandSocket'
 import { AppState } from '../../../../shared/src/types/common'
+import { useCommandSocketState } from './useCommandSocket'
+import ReadyToPlay from './ReadyToPlay'
+import PlayingGame from './PlayingGame'
+import SettingUp from './SettingUp'
+import { useGameLogic } from './useGameLogic'
 
 const Screen = () => {
-  const { connect } = useDartBoard()
-  const [, status] = useCommandSocketState<AppState['status']>('status')
+  const [, status]  = useCommandSocketState<AppState['status']>('status') 
 
+  useGameLogic()
+  
   switch(status) {
     case 'PLAYING_GAME': {
       return (
-        <>
-          Playing
-        </>
+        <PlayingGame />
       )
       break;
     }
     case 'READY_TO_PLAY': {
       return (
-        <>
-          <GameSelector />
-          <PlayerManager />
-    
-          <button onClick={connect}>connect to dartboard</button>
-        </>
+        <ReadyToPlay />
       )
       break;
     }
     case 'SETTING_UP': {
       return (
-        <>
-          Setting up
-        </>
+        <SettingUp />
       )
       break;
     }

@@ -1,6 +1,5 @@
 import { Socket } from "socket.io";
-import { FromClientEvent } from './events/utils/FromClientEvent'
-import { ToClientEvent } from './events/utils/ToClientEvent'
+import { FromClientEvent, ToClientEvent } from './events/utils/ClientEvent'
 import { CHANNEL_NAME } from "../../../shared/src/constants";
 import { Client } from "../../../shared/src/types/common";
 

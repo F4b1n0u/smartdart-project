@@ -1,4 +1,5 @@
 import { Topic, AppState, Entity, Emitter, Receiver, ClientReceiver } from '../../common'
+import { FromClientEvent } from './ClientEvent';
 
 type GenericEvent<
   TTopic extends Topic,
@@ -91,11 +92,15 @@ export type RequestFullAppStateEvent =
     Entity.CONTROLLER
   >
 
+type Notification = {
+  state: AppState,
+  lastEvent: FromClientEvent
+}
 export type NotifyAppStateChangeEvent =
   GenericEvent<
     Topic.STATE,
     'NOTIFY_STATE_CHANGE',
-    AppState,
+    Notification,
     
     Entity.CONTROLLER,
     Receiver
