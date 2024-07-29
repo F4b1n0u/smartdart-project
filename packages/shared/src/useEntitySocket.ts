@@ -8,7 +8,6 @@ import { FromClientEvent, ToClientEvent } from './types/events/utils/ClientEvent
 import { RequestFullAppStateEvent, NotifyAppStateChangeEvent } from './types/events/utils/utils';
 import { CHANNEL_NAME } from './constants';
 
-
 // TODO see to rely on .env, ideally the same one (server/client)
 const SOCKET_IO_HOST = window.location.hostname
 const SOCKET_IO_PORT = 8080
@@ -70,17 +69,19 @@ const useSocket = <
     emit(event)
   }, [emit])
 
-  useEffect(() => {
-    socket.on(CHANNEL_NAME, (event: TReceiveEvent) => {
-      const { target: receiver } = event
+  const handleNewMessage = useCallback((event: TReceiveEvent) => {
+    const { target: receiver } = event
 
-      if (receiver === entity) {
-        onEvent(event, emit)
-      }
-    });
+    if (receiver === entity) {
+      onEvent(event, emit)
+    }
+  }, [onEvent, emit])
+
+  useEffect(() => {
+    socket.on(CHANNEL_NAME, handleNewMessage);
 
     return () => {
-      socket.off(CHANNEL_NAME);
+      socket.off(CHANNEL_NAME, handleNewMessage);
     };
   }, [entity, onEvent, emit, socket]);
 
@@ -119,14 +120,8 @@ export const useSocketState = <
   const $state = useMemo(() => new BehaviorSubject<TState>(defaultWhileLoading as TState), [path])
   const $event = useMemo(() => new BehaviorSubject<FromClientEvent | undefined>(undefined), [])
 
-  const { emit } = useSocket<
-    RequestFullAppStateEvent,
-    // TODO check why the following does not work
-    // NotifyAppStateChangeEvent<TTopic>
-    NotifyAppStateChangeEvent
-  >({
-    entity: receiver,
-    onEvent: ({ action, payload }) => {
+  const handleNewMessage = useCallback(
+    ({ action, payload }: NotifyAppStateChangeEvent) => {
       if (action === 'NOTIFY_STATE_CHANGE') {
         const { state, lastEvent } = payload
         const value = get(state, path)
@@ -139,7 +134,18 @@ export const useSocketState = <
 
         setIsLoaded(true)
       }
-    }
+    },
+    [$state, $event]
+  )
+
+  const { emit } = useSocket<
+    RequestFullAppStateEvent,
+    // TODO check why the following does not work
+    // NotifyAppStateChangeEvent<TTopic>
+    NotifyAppStateChangeEvent
+  >({
+    entity: receiver,
+    onEvent: handleNewMessage
   })
 
   useEffect(() => {
