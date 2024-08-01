@@ -8,8 +8,6 @@ import { useGameLogic } from './useGameLogic'
 const Screen = () => {
   const [, status]  = useCommandSocketState<AppState['status']>('status') 
 
-  console.log({status})
-
   useGameLogic()
   
   switch(status) {

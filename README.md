@@ -8,6 +8,10 @@
 `/bin/bash -c "$(cu/rl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
 `brew install tmux`
 
+- add mouse support (to be able to scroll in tmux)
+`nano ~/.tmux.conf` and add `set -g mouse on`
+`tmux source-file ~/.tmux.conf`
+
 - install dependencies
 `npm install`
 

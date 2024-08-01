@@ -93,9 +93,10 @@ const useSocket = <
 
 export const useSocketEmit = <
   TFromClientEvent extends FromClientEvent,
->(entity: ClientEmitter) => {
-  return useSocket<TFromClientEvent, ToClientEvent>({ entity })
-}
+>(params: {
+  entity: ClientEmitter,
+  onEvent?: (event: ToClientEvent, cb: EmitFn<TFromClientEvent>) => void
+}) => useSocket<TFromClientEvent, ToClientEvent>(params)
 
 type ValuesOf<T> = T[keyof T];
 
@@ -124,7 +125,8 @@ export const useSocketState = <
     ({ action, payload }: NotifyAppStateChangeEvent) => {
       if (action === 'NOTIFY_STATE_CHANGE') {
         const { state, lastEvent } = payload
-        const value = get(state, path)
+
+        const value = path ? get(state, path) : state
         
         setState(value)
         $state.next(value)
@@ -154,7 +156,7 @@ export const useSocketState = <
       action: 'REQUEST_FULL_APP_STATE',
       payload: undefined
     })
-  }, [emit])
+  }, [])
 
   return [
     isLoaded,

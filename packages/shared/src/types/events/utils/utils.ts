@@ -57,6 +57,45 @@ export type ToCommandEvent<
   Entity.COMMAND
 >
 
+export type ToClient<
+  TTopic extends Topic,
+  TAction extends string,
+  TPayload,
+> = GenericEvent<
+  TTopic,
+  TAction,
+  TPayload,
+
+  Entity.CONTROLLER,
+  ClientReceiver
+>
+
+export type FromDPadEvent<
+  TTopic extends Topic,
+  TAction extends string,
+  TPayload
+> = GenericEvent<
+  TTopic,
+  TAction,
+  TPayload,
+
+  Entity.DPAD,
+  Entity.CONTROLLER
+>
+
+export type ToDPadEvent<
+  TTopic extends Topic,
+  TAction extends string,
+  TPayload
+> = GenericEvent<
+  TTopic,
+  TAction,
+  TPayload,
+
+  Entity.CONTROLLER,
+  Entity.DPAD
+>
+
 export type FromDartboardEvent<
   TAction extends string,
   TPayload,

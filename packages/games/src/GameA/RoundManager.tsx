@@ -1,8 +1,7 @@
 import { Topic } from '../../../shared/src/types/common';
 import { GameAConfig } from './types';
-import { FromRoundEvent } from '../../../shared/src/types/events/RoundEvent';
 
-const RoundManager: GameAConfig<FromRoundEvent>['RoundManager'] = ({
+const RoundManager: GameAConfig['RoundManager'] = ({
   useGameSocketEmit
 }) => {
   const { emitHandler } = useGameSocketEmit()
@@ -10,7 +9,7 @@ const RoundManager: GameAConfig<FromRoundEvent>['RoundManager'] = ({
   return (
     <div>
       <button onClick={emitHandler({
-        topic: Topic.ROUNDS,
+        topic: Topic.GAME,
         action: 'START_ROUND',
         payload: undefined
       })}>Ready</button>

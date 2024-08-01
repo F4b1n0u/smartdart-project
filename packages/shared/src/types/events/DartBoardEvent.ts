@@ -1,5 +1,5 @@
 import { Location } from '../common'
-import { FromDartboardEvent, RequestFullAppStateEvent, NotifyAppStateChangeEvent } from './utils/utils'
+import { FromDartboardEvent, RequestFullAppStateEvent } from './utils/utils'
 
 export type FromDartBoardEvent = 
   FromDartboardEvent<
@@ -11,10 +11,10 @@ export type FromDartBoardEvent =
     undefined
   > |
   FromDartboardEvent<
-    'REGISTER_THROW',
+    'NOTIFY_THROW_LANDED',
     Location
   > |
   RequestFullAppStateEvent
 
-export type ToDartBoardEvent = NotifyAppStateChangeEvent
+export type ToDartBoardEvent = never
   

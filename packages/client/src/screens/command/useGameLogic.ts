@@ -1,3 +1,4 @@
+import { useCallback } from 'react'
 import { AppState, Topic } from "../../../../shared/src/types/common"
 import { FromGameEvent } from "../../../../shared/src/types/events/GameEvent"
 import { useCommandSocketEmit, useCommandSocketState } from "./useCommandSocket"
@@ -6,24 +7,34 @@ import { useSelectedGameConfig } from "./useSelectedGameConfig"
 export const useGameLogic = () => {
   const { config } = useSelectedGameConfig()
   
-  const [ ,appState, , event ] = useCommandSocketState<AppState<unknown>>('', undefined)
-  const { emit } = useCommandSocketEmit<FromGameEvent>()
+  const [ , appState, , event ] = useCommandSocketState<AppState<unknown>>('', undefined)
 
+  const handleNewMessage = useCallback((event: FromGameEvent) => {
+    if (config && appState && event) {
+      const { onEvent } = config!;
+      
+      if (event.action === 'REQUEST_FULL_APP_STATE') {
+        return 
+      }
 
-  if (config && appState) {
-    const { onEvent } = config!;
-
-    // TODO how can I improve this casting of the appState
-    const updatedGameState = onEvent(event, appState as any, emit)
-
-    if (updatedGameState) {
-      emit({
-        topic: Topic.GAME,
-        action: 'UPDATE_GAME_STATE',
-        payload: updatedGameState
-      })
+      // TODO how can I improve this casting of the appState
+      const updatedGameState = onEvent(event as any, appState as any, emit)
+  
+      if (updatedGameState) {
+        emit({
+          topic: Topic.GAME,
+          action: 'UPDATE_GAME_STATE',
+          payload: updatedGameState
+        })
+      }
     }
-  }
+  }, [
+    config,
+    appState,
+    event
+  ])
+
+  const { emit } = useCommandSocketEmit<FromGameEvent>(handleNewMessage)
 
   // listen to state changes (maybe ignore GAME STATE UPDATE to avoid loops)
   // to get the latest:

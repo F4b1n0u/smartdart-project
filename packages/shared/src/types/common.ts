@@ -19,13 +19,9 @@ export type ClientReceiver = Client & Receiver
 
 export enum Topic {
   DARTBOARD = 'DARTBOARD',
-  SCORE = 'SCORE_BOARD',
   GAMES = 'GAMES',
   PLAYERS = 'PLAYERS',
-  ROUNDS = 'ROUND',
-  THROWS = 'THROWS',
   SETUP = 'SETUP',
-  D_PAD = 'D_PAD',
   GAME = 'GAME',
 
   STATE = 'STATE',

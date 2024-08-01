@@ -16,6 +16,8 @@ import { Topic, GameId, Entity } from '@shared/types/common';
 import { createLogger, format, transports } from 'winston';
 import util from 'util';
 
+// import { GAMES_CONFIG_MAP } from '../../games/src/constants'
+
 const { combine, timestamp, printf, colorize } = format;
 const logFormat = printf(({ level, message, timestamp }) => {
   return `${timestamp} [${level}]: ${message}`;
@@ -34,7 +36,7 @@ const logger = createLogger({
   ]
 });
 
-const log = (level: string, ...args: any[]) => {
+const log = (level: string, ...args: unknown[]) => {
   const formattedArgs = args.map(arg => 
     typeof arg === 'object' ? util.inspect(arg, { depth: 2, colors: true }) : arg
   ).join(' ');
@@ -154,11 +156,6 @@ io.on("connection", (socket) => {
     }
 
     switch (topic) {
-      case Topic.D_PAD: {
-        // TODO implement the dpad for non playing players
-        break;
-      }
-
       case Topic.PLAYERS: {
         switch (action) {
           case 'ADD_PLAYER': {
@@ -189,23 +186,9 @@ io.on("connection", (socket) => {
         break;
       }
 
-      case Topic.THROWS: {
-        switch (action) {
-          case 'MISS_THROW': {
-            break;
-          }
-          
-          case 'SIMULATE_THROW': {
-            break;
-          }
-        }
-
-        break;
-      }
-
       case Topic.DARTBOARD: {
         switch (action) {
-          case 'REGISTER_THROW': {
+          case 'NOTIFY_THROW_LANDED': {
             break;
           }
         }
@@ -239,11 +222,17 @@ io.on("connection", (socket) => {
           case 'UPDATE_GAME_STATE': {
             const { payload } = event
             updateState('game', payload)
+            break;
+          }
+          case 'START_ROUND' : {
+            //  TODO try again to move the logic in the server
           }
         }
       }
     }
   }
+
+
 
   socket.on(CHANNEL_NAME, handleNewMessage);
 });

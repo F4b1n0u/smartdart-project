@@ -3,9 +3,11 @@ import { FromClientEvent } from '../../../../shared/src/types/events/utils/Clien
 import { useSocketEmit, useSocketState } from '../../../../shared/src/useEntitySocket'
 
 export const useCommandSocketEmit = <
-TFromClientEvent extends FromClientEvent,
->() => {
-  return useSocketEmit<TFromClientEvent>(Entity.COMMAND)
+  TFromClientEvent extends FromClientEvent,
+>(
+  onEvent = () => {}
+) => {
+  return useSocketEmit<TFromClientEvent>({ entity: Entity.COMMAND, onEvent })
 }
 
 export const useCommandSocketState = <

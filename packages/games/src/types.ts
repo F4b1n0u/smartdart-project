@@ -2,13 +2,12 @@ import { ComponentType } from 'react'
 import { SubjectLike } from 'rxjs'
 
 import { AppState, EmitFn, EmitHandlerFn } from '../../shared/src/types/common'
-import { FromClientEvent } from '../../shared/src/types/events/utils/ClientEvent'
 import { FromGameEvent, ToGameEvent } from '../../shared/src/types/events/GameEvent'
 
 export type CustomComponentProps<
   TFromEvent extends FromGameEvent,
 > = {
-  useGameSocketEmit?:  () => {
+  useGameSocketEmit:  () => {
     emitHandler: EmitHandlerFn<TFromEvent>;
     emit: EmitFn<TFromEvent>;
   }
@@ -26,11 +25,11 @@ export type GameConfig<
 > = {
   // keep in mind that some of this component will be rendered on the command entity and some on the display entity
   // that's why the socket hooks are injected via props
-  Preview: CustomComponent<TFromEvent>,       // for display entity
+  Preview: ComponentType,                     // for display entity
   ScoreBoard: CustomComponent<TFromEvent>,    // for display entity
-  RoundManager: CustomComponent<TFromEvent>,  // for display entity
-  Outcome: CustomComponent<TFromEvent>,       // for display entity
-  Thumbnail: CustomComponent<TFromEvent>,     // for command entity
+  Outcome: ComponentType,                     // for display entity
+  RoundManager: CustomComponent<TFromEvent>,  // for command entity
+  Thumbnail: ComponentType,                   // for command entity
   onEvent: (                                  // for controller logic
     event: TToEvent,
     appState: AppState<TGameState>,

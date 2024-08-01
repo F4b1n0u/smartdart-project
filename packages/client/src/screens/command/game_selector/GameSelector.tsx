@@ -1,11 +1,16 @@
 import { GAMES_CONFIG_MAP } from '../../../../../games/src/constants'
-import { GameId } from '../../../../../shared/src/types/common'
-import { useCommandSocketEmit } from '../useCommandSocket'
+import { AppState, GameId } from '../../../../../shared/src/types/common'
+import { useCommandSocketEmit, useCommandSocketState } from '../useCommandSocket'
 import { Topic } from '../../../../../shared/src/types/common'
 import { FromGamesEvent } from '../../../../../shared/src/types/events/GamesEvent'
+import { useSelectedGameConfig } from '../useSelectedGameConfig'
 
 export const GameSelector = () => {
   const { emitHandler } = useCommandSocketEmit<FromGamesEvent>()
+  const { config } = useSelectedGameConfig()
+  const [, appState] = useCommandSocketState<AppState>('')
+
+  const isPlayable = (config && appState) && config.isPlayable(appState)
 
   return (
     <div>
@@ -32,6 +37,7 @@ export const GameSelector = () => {
           action: 'START_SELECTED_GAME',
           payload: undefined
         })}
+        disabled={!isPlayable}
       >
         Play
       </button>

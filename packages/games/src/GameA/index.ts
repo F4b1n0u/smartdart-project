@@ -48,31 +48,24 @@ const config: GameAConfig = {
               rounds: []
             }
           }
+          // case 'START_ROUND': {
+          //   return {
+          //     ...gameState,
+          //     rounds: [
+          //       ...gameState.rounds,
+          //       {
+          //         playingPlayerId: appState.game.currentPlayer,
+          //         throws: []
+          //       }
+          //     ]
+          //   }
+          // }
         }
-      }
-      // case Topic.ROUNDS: {
-      //   switch(action) {
-      //     case 'START_ROUND': {
-      //       return {
-      //         ...gameState,
-      //         rounds: [
-      //           ...gameState.rounds,
-      //           {
-      //             playingPlayerId: appState.game.currentPlayer,
-      //             throws: []
-      //           }
-      //         ]
-      //       }
-      //     }
-      //   }
-      // }
-      default: {
-        return gameState
       }
     }
   },
   // can check here for minimum amount of player for example
-  isPlayable: () => true
+  isPlayable: (appState) => appState.players.length > 1
 }
 
 export * from './types'
