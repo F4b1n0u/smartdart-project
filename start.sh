@@ -10,7 +10,7 @@ tmux split-window -h
 tmux send-keys -t SmartDart:0.0 'cd ./packages/server && npm run start:dev' C-m
 
 # Select the second pane (1) and start the client
-tmux send-keys -t SmartDart:0.1 'cd ./packages/client && npm run dev' C-m
+tmux send-keys -t SmartDart:0.1 'cd ./packages/client && npm run start' C-m
 
 # Attach to the session
 tmux attach-session -t SmartDart

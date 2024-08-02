@@ -138,7 +138,7 @@ type Notification = {
 export type NotifyAppStateChangeEvent =
   GenericEvent<
     Topic.STATE,
-    'NOTIFY_STATE_CHANGE',
+    'SEND_LAST_APP_STATE',
     Notification,
     
     Entity.CONTROLLER,

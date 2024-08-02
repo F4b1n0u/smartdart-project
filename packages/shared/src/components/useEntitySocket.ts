@@ -3,23 +3,22 @@ import { get } from 'lodash';
 import { Socket } from 'socket.io-client'
 import { BehaviorSubject, SubjectLike } from 'rxjs'
 import { useCallback, useEffect, useState, useMemo } from 'react';
-import { AppState, Entity, Topic, Client, ClientEmitter, ClientReceiver } from './types/common';
-import { FromClientEvent, ToClientEvent } from './types/events/utils/ClientEvent';
-import { RequestFullAppStateEvent, NotifyAppStateChangeEvent } from './types/events/utils/utils';
-import { CHANNEL_NAME } from './constants';
+import { AppState, Entity, Topic, Client, ClientEmitter, ClientReceiver } from '../types/common';
+import { FromClientEvent, ToClientEvent } from '../types/events/utils/ClientEvent';
+import { RequestFullAppStateEvent, NotifyAppStateChangeEvent } from '../types/events/utils/utils';
+import { CHANNEL_NAME } from '../constants';
 
 // TODO see to rely on .env, ideally the same one (server/client)
 const SOCKET_IO_HOST = window.location.hostname
 const SOCKET_IO_PORT = 8080
 
-type EmitFnParams<TEmitEvent extends FromClientEvent> = Pick<TEmitEvent, 'topic' | 'action' | 'payload'>
-type EmitFn<TEmitEvent extends FromClientEvent> = (params: EmitFnParams<TEmitEvent>) => void
-
-type EmitHandlerFn<TEmitEvent extends FromClientEvent> = (params: EmitFnParams<TEmitEvent>) => () => void
+export type EmitFnParams<TEmitEvent extends FromClientEvent> = Omit<TEmitEvent, 'source' | 'target'>
+export type EmitFn<TEmitEvent extends FromClientEvent> = (params: EmitFnParams<TEmitEvent>) => void
+export type EmitHandlerFn<TEmitEvent extends FromClientEvent> = (params: EmitFnParams<TEmitEvent>) => () => void
 
 // KINDA USELESS ... as in theory you will have only one socket instance per client, so that kinda useless
 // maybe we should have a dedicated getCommandSocket, and getDisplaySocket, both within their respective folder !
-let sockets: Partial<Record<Client, Socket>> = {}
+const sockets: Partial<Record<Client, Socket>> = {}
 
 const getSocket = (emitter: Client) => {
   if (sockets[emitter]) {
@@ -91,7 +90,7 @@ const useSocket = <
   }
 }
 
-export const useSocketEmit = <
+export const useEntitySocketEmit = <
   TFromClientEvent extends FromClientEvent,
 >(params: {
   entity: ClientEmitter,
@@ -100,7 +99,7 @@ export const useSocketEmit = <
 
 type ValuesOf<T> = T[keyof T];
 
-export const useSocketState = <
+export const useEntitySocketState = <
   TState extends ValuesOf<AppState>,  // TODO the value of the path should define the State type
 >(
   receiver: ClientReceiver,
@@ -123,7 +122,7 @@ export const useSocketState = <
 
   const handleNewMessage = useCallback(
     ({ action, payload }: NotifyAppStateChangeEvent) => {
-      if (action === 'NOTIFY_STATE_CHANGE') {
+      if (action === 'SEND_LAST_APP_STATE') {
         const { state, lastEvent } = payload
 
         const value = path ? get(state, path) : state

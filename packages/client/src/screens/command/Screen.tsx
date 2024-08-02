@@ -1,35 +1,53 @@
-import { AppState } from '../../../../shared/src/types/common'
-import { useCommandSocketState } from './useCommandSocket'
+import React from 'react'
+import { AppState, Entity } from '../../../../shared/src/types/common'
+import { AppStateContext } from '@shared/components/AppStateContext'
 import ReadyToPlay from './ReadyToPlay'
 import PlayingGame from './PlayingGame'
 import SettingUp from './SettingUp'
-import { useGameLogic } from './useGameLogic'
+import { useEntitySocketEmit, useEntitySocketState } from '@shared/components/useEntitySocket'
 
 const Screen = () => {
-  const [, status]  = useCommandSocketState<AppState['status']>('status') 
-
-  useGameLogic()
+  const [, appState] = useEntitySocketState<AppState>(Entity.COMMAND, '')
+  const { emit, emitHandler} = useEntitySocketEmit({ entity: Entity.COMMAND })
   
-  switch(status) {
+  let children = null
+  switch(appState?.status) {
     case 'PLAYING_GAME': {
-      return (
+      children = (
         <PlayingGame />
       )
       break;
     }
     case 'READY_TO_PLAY': {
-      return (
+      children = (
         <ReadyToPlay />
       )
       break;
     }
     case 'SETTING_UP': {
-      return (
+      children = (
         <SettingUp />
       )
       break;
     }
+
+    default: {
+      children = (
+        <>Loading</>
+      )
+    }
   }
+
+  return (
+    <AppStateContext.Provider value={{
+      isLoaded: !!appState,
+      appState,
+      emit,
+      emitHandler
+    }}>
+      {children}
+    </AppStateContext.Provider>
+  )
 }
 
 export default Screen

@@ -1,16 +1,16 @@
-import { useSelectedGameConfig } from './useSelectedGameConfig'
-import { useCommandSocketState, useCommandSocketEmit } from './useCommandSocket'
+import React from 'react'
+
+import { useSelectedGameConfig } from '@shared/components/useSelectedGameConfig'
 
 const PlayingGame = () => {
   const { isConfigLoaded, config } = useSelectedGameConfig()
 
   if (isConfigLoaded) {
-    const { RoundManager, ScoreBoard } = config!
+    const { RoundManager } = config!
     
     return (
       <>
-        <RoundManager useGameSocketEmit={useCommandSocketEmit} useGameSocketState={useCommandSocketState}/>
-        <ScoreBoard useGameSocketEmit={useCommandSocketEmit} useGameSocketState={useCommandSocketState}/>
+        <RoundManager />
       </>
     )
   } else {

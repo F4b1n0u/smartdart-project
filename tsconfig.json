@@ -1,8 +1,19 @@
 {
   "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "lib": ["dom", "es2017"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
     "baseUrl": ".",
+    "jsx": "react", // Add this line for JSX support
     "paths": {
       "@shared/*": ["packages/shared/src/*"]
     }
-  }
+  },
+  "include": ["packages/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

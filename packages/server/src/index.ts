@@ -16,7 +16,7 @@ import { Topic, GameId, Entity } from '@shared/types/common';
 import { createLogger, format, transports } from 'winston';
 import util from 'util';
 
-// import { GAMES_CONFIG_MAP } from '../../games/src/constants'
+import { GAMES_CONFIG_MAP } from '@shared/games/constants'
 
 const { combine, timestamp, printf, colorize } = format;
 const logFormat = printf(({ level, message, timestamp }) => {
@@ -38,7 +38,7 @@ const logger = createLogger({
 
 const log = (level: string, ...args: unknown[]) => {
   const formattedArgs = args.map(arg => 
-    typeof arg === 'object' ? util.inspect(arg, { depth: 2, colors: true }) : arg
+    typeof arg === 'object' ? util.inspect(arg, { depth: 3, colors: true }) : arg
   ).join(' ');
   logger.log(level, formattedArgs);
 };
@@ -114,12 +114,14 @@ io.on("connection", (socket) => {
   function handleNewMessage(event: FromClientEvent) {
     log('info', "receives <- ", event);
 
+    const { onEvent } = GAMES_CONFIG_MAP[state.selectedGameId]
+
     const broadcastState = (state: AppState) => {
       const targets = Object.keys(sockets)
       targets.forEach((target) => {
         emit({
           topic: Topic.STATE,
-          action: 'NOTIFY_STATE_CHANGE',
+          action: 'SEND_LAST_APP_STATE',
           payload: {
             state,
             lastEvent: event,
@@ -145,7 +147,7 @@ io.on("connection", (socket) => {
       emit({
         topic: Topic.STATE,
         target: source as ClientReceiver,
-        action: 'NOTIFY_STATE_CHANGE',
+        action: 'SEND_LAST_APP_STATE',
         payload: {
           state,
           lastEvent: event
@@ -205,16 +207,10 @@ io.on("connection", (socket) => {
           case 'START_SELECTED_GAME': {
             updateState('status', 'PLAYING_GAME')
 
-            emit({
-              topic: Topic.GAME,
-              action: 'INITIALIZE',
-              payload: undefined,
-              target: Entity.COMMAND
-            })
             break;
           }
         }
-        break
+        break;
       }
     
       case Topic.GAME: {
@@ -224,15 +220,18 @@ io.on("connection", (socket) => {
             updateState('game', payload)
             break;
           }
-          case 'START_ROUND' : {
-            //  TODO try again to move the logic in the server
-          }
         }
+        break;
       }
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updatedGameState = onEvent(event, state as any, emit)
+
+    if (updatedGameState) {
+      updateState('game', updatedGameState)
+    }
   }
-
-
 
   socket.on(CHANNEL_NAME, handleNewMessage);
 });

@@ -8,7 +8,7 @@ type StateChangeFromControllerTo<
 > = FromControllerEvent<
   TEntity,
   TTopic,
-  'NOTIFY_STATE_CHANGE',
+  'SEND_LAST_APP_STATE',
   {
     state: AppState,
     lastEvent: FromClientEvent

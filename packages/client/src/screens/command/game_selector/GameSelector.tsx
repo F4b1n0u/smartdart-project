@@ -1,14 +1,15 @@
-import { GAMES_CONFIG_MAP } from '../../../../../games/src/constants'
-import { AppState, GameId } from '../../../../../shared/src/types/common'
-import { useCommandSocketEmit, useCommandSocketState } from '../useCommandSocket'
-import { Topic } from '../../../../../shared/src/types/common'
-import { FromGamesEvent } from '../../../../../shared/src/types/events/GamesEvent'
-import { useSelectedGameConfig } from '../useSelectedGameConfig'
+
+import React, { useContext } from 'react'
+
+import { AppState, GameId } from '@shared/types/common'
+import { Topic } from '@shared/types/common'
+import { GAMES_CONFIG_MAP } from '@shared/games/constants'
+import { AppStateContext } from '@shared/components/AppStateContext'
+import { useSelectedGameConfig } from '@shared/components/useSelectedGameConfig'
 
 export const GameSelector = () => {
-  const { emitHandler } = useCommandSocketEmit<FromGamesEvent>()
+  const { appState, emitHandler } = useContext(AppStateContext)
   const { config } = useSelectedGameConfig()
-  const [, appState] = useCommandSocketState<AppState>('')
 
   const isPlayable = (config && appState) && config.isPlayable(appState)
 
@@ -17,6 +18,7 @@ export const GameSelector = () => {
       {
         Object.values(GameId).map(gameId => {
           const { Thumbnail: ThumbnailComponent } = GAMES_CONFIG_MAP[gameId]
+
           return (
             <button
               key={gameId}

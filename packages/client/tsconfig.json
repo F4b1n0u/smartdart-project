@@ -1,16 +1,9 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "module": "ESNext",
-    "target": "ESNext",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "jsx": "preserve",
-    "sourceMap": true,
-    "baseUrl": ".",
+    "outDir": "dist",
+    "rootDir": "src",
+    "jsx": "react" // Ensure this line is present for JSX support
   },
-  "include": ["src/**/*", "global.d.ts", "../shared/src/useSocket.ts"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*", "../shared/src/components/useSelectedGameConfig.ts"]
 }

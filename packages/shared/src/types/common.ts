@@ -1,10 +1,10 @@
 import { FromClientEvent } from './events/utils/ClientEvent'
 
 export enum Entity {
-  DISPLAY = 'DISPLAY', // projector
-  COMMAND = 'COMMAND', // tablet
-  DARTBOARD = 'DARTBOARD', // unicorn dartboard
-  DPAD = 'DPAD', // player dpad
+  DISPLAY = 'DISPLAY',      // projector
+  COMMAND = 'COMMAND',      // tablet
+  DARTBOARD = 'DARTBOARD',  // unicorn dartboard
+  DPAD = 'DPAD',            // player dpad
   CONTROLLER = 'CONTROLLER' // server
 }
 
@@ -23,7 +23,6 @@ export enum Topic {
   PLAYERS = 'PLAYERS',
   SETUP = 'SETUP',
   GAME = 'GAME',
-
   STATE = 'STATE',
 }
 
@@ -68,7 +67,8 @@ export enum DPadDirection {
 
 export type Round = {
   playingPlayerId: Player['id'],
-  throws: Array<Throw>
+  throws: Array<Throw>,
+  canFinishRound: boolean
 }
 
 export type AppState<TGameState = unknown> = {

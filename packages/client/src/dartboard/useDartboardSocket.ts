@@ -1,9 +1,9 @@
-import { Entity } from '../../../shared/src/types/common'
-import { FromClientEvent } from '../../../shared/src/types/events/utils/ClientEvent'
-import { useSocketEmit } from '../../../shared/src/useEntitySocket'
+import { Entity } from '@shared/types/common'
+import { FromClientEvent } from '@shared/types/events/utils/ClientEvent'
+import { useEntitySocketEmit } from '@shared/components/useEntitySocket'
 
 export const useDartboardSocketEmit = <
   TFromClientEvent extends FromClientEvent,
 >() => {
-  return useSocketEmit<TFromClientEvent>(Entity.DARTBOARD)
+  return useEntitySocketEmit<TFromClientEvent>(Entity.DARTBOARD)
 }

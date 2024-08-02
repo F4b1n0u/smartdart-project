@@ -1,5 +1,5 @@
-import { DPadDirection, Topic } from '../common'
-import { RequestFullAppStateEvent, NotifyAppStateChangeEvent, FromCommandEvent, FromDPadEvent, ToDPadEvent, ToClient } from './utils/utils'
+import { DPadDirection, Topic, Location } from '../common'
+import { RequestFullAppStateEvent, NotifyAppStateChangeEvent, FromCommandEvent, FromDPadEvent, ToDPadEvent } from './utils/utils'
 
 export type FromGameEvent = RequestFullAppStateEvent |
   FromCommandEvent<
@@ -38,12 +38,8 @@ export type FromGameEvent = RequestFullAppStateEvent |
     undefined
   >
 
+  // basically event you are going to listen to in the game config.onEvent cb
 export type ToGameEvent = NotifyAppStateChangeEvent |
-  ToClient<
-    Topic.GAME,
-    'INITIALIZE',
-    undefined
-  > |
   ToDPadEvent<
     Topic.GAME,
     'ENABLE_DPAD',

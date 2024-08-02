@@ -21,7 +21,7 @@ export const useDartBoard = () => {
       onDartLanding: (location: Location) => {
         emit({
           topic: Topic.DARTBOARD,
-          action: 'REGISTER_THROW',
+          action: 'NOTIFY_THROW_LANDED',
           payload: location
         })
       },

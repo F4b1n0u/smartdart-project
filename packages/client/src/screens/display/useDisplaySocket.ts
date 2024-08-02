@@ -1,8 +1,8 @@
-import { Entity } from '../../../../shared/src/types/common'
-import { useSocketState } from '../../../../shared/src/useEntitySocket'
+import { Entity } from '@shared/types/common'
+import { useEntitySocketState } from '@shared/components/useEntitySocket'
 
 export const useDisplaySocketState = <
   TState,
 >(path: string) => {
-  return useSocketState<TState>(Entity.DISPLAY, path)
+  return useEntitySocketState<TState>(Entity.DISPLAY, path)
 }
