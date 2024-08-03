@@ -147,8 +147,16 @@ export const onEvent: GameAConfig['onEvent'] = (event, appState) => {
               return round
             })
           }
-        }  
-        break;
+          break
+        }
+        case 'FINISH_ROUND': {
+          updateGameState = {
+            ...updateGameState,
+            status: 'IDLE',
+            currentPlayerId: updateGameState.nextPlayerIdByCurrentPlayerId[updateGameState.currentPlayerId!] 
+          }
+          break
+        }
       }
       const canFinishRound = updateGameState.rounds[updateGameState.rounds.length - 1].throws.length > 2
       updateGameState.rounds[updateGameState.rounds.length - 1].canFinishRound = canFinishRound

@@ -1,11 +1,10 @@
-import React from 'react'
-import { useDPadSocketEmit } from './useDPadSocket';
+import React, { useContext } from 'react'
 import { DPad } from './DPad';
 import { DPadDirection, Topic } from '@shared/types/common'
-import { FromDPadEvent } from '@shared/types/events/DPadEvent';
+import { AppStateContext } from '@shared/components/AppStateContext';
 
 function Screen() {
-  const { emitHandler } = useDPadSocketEmit<FromDPadEvent>()
+  const { emitHandler } = useContext(AppStateContext)
 
   return (
     <div>

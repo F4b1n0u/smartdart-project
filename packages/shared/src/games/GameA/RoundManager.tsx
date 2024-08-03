@@ -1,8 +1,28 @@
 import React, { useContext } from 'react';
+import styled from 'styled-components';
 
 import { AppState, Multiplier, Topic } from '../../types/common';
 import { GameAConfig, GameAState } from './types';
 import { AppStateContext } from '@shared/components/AppStateContext';
+
+const Dart = styled.img`
+  width: 50px;
+`;
+
+const Throws = styled.div`
+  display: flex;
+  flex-direction: 'row';
+  justify-content: 'space-between';
+`
+
+const Photo = styled.img`
+  width: 100px;
+  height: 100px;
+  background: #ddd;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  object-fit: cover;
+`;
 
 export const RoundManager: GameAConfig['RoundManager'] = () => {
   const { appState, emitHandler } = useContext(AppStateContext)
@@ -14,9 +34,12 @@ export const RoundManager: GameAConfig['RoundManager'] = () => {
   }
 
   const { game: gameState } = appState as AppState<GameAState>
+
+  let children = null
+
   switch(gameState.status) {
     case 'IDLE': {
-      return (
+      children = (
         <div>
           <button onClick={emitHandler({
             topic: Topic.GAME,
@@ -25,19 +48,32 @@ export const RoundManager: GameAConfig['RoundManager'] = () => {
           })}>Ready</button>
         </div>
       );
+      break
     }
     case 'RUNNING': {
       const currentRound = gameState.rounds[gameState.rounds.length - 1]
       const { canFinishRound, throws } = currentRound
-      
+
       const canMissThrow = !canFinishRound
       const canSimulateThrow = !canFinishRound
       const canCancelLastThrow = throws.length > 0
       const canEndRound = canFinishRound
       
-      console.log({currentRound, throws})
-      return (
+      children = (
         <div>
+          <Throws>
+          {
+            throws.map(({ location }, index) => (
+              <React.Fragment key={index}>
+                <Dart key={index} src="/dart.png" />
+                <span>{location ? `${location.score} - ${location.multiplier}` : 'MISS' }</span>
+              </React.Fragment>
+              
+            ))
+          }
+          </Throws>
+          
+
           <button
             onClick={emitHandler({
               topic: Topic.GAME,
@@ -45,7 +81,9 @@ export const RoundManager: GameAConfig['RoundManager'] = () => {
               payload: undefined
             })}
             disabled={!canMissThrow}
-          >miss</button>
+          >
+            miss
+          </button>
 
           <button
             onClick={emitHandler({
@@ -57,7 +95,9 @@ export const RoundManager: GameAConfig['RoundManager'] = () => {
               }
             })}
             disabled={!canSimulateThrow}
-          >simulate</button>
+          >
+            simulate 1 x2
+          </button>
 
           <button
             onClick={emitHandler({
@@ -66,7 +106,9 @@ export const RoundManager: GameAConfig['RoundManager'] = () => {
               payload: undefined
             })}
             disabled={!canCancelLastThrow}
-          >cancel last throw</button>
+          >
+            cancel last throw
+          </button>
 
           <button
             onClick={emitHandler({
@@ -75,11 +117,26 @@ export const RoundManager: GameAConfig['RoundManager'] = () => {
               payload: undefined
             })}
             disabled={!canEndRound}
-          >end round</button>
+          >
+            end round
+          </button>
         </div>
       )
+
+      break;
     }
   }
 
-  
+  const { currentPlayerId } = gameState
+      
+  const { players } = appState
+  const playingPlayer = players.find(({ id }) => id === currentPlayerId)!
+  return (
+    <>
+
+      <Photo src={playingPlayer.photo || 'photo'} alt="Player" />
+      <h3>{playingPlayer.name}</h3>
+      {children}
+    </>
+  )
 }

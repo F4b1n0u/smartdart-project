@@ -1,7 +1,7 @@
 
 import React, { useContext } from 'react'
 
-import { AppState, GameId } from '@shared/types/common'
+import { GameId } from '@shared/types/common'
 import { Topic } from '@shared/types/common'
 import { GAMES_CONFIG_MAP } from '@shared/games/constants'
 import { AppStateContext } from '@shared/components/AppStateContext'
