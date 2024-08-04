@@ -1,52 +1,53 @@
 import React from 'react'
-import { AppStateContext } from '@shared/components/AppStateContext'
-import { useEntitySocketEmit, useEntitySocketState } from '@shared/components/useEntitySocket'
+
 import { AppState, Entity } from '@shared/types/common'
+import { AppStateContext } from '@shared/components/AppStateContext'
 import { GAMES_CONFIG_MAP } from '@shared/games/constants'
+import { useEntitySocketState } from '@shared/components/useEntitySocket'
 
 const Screen = () => {
-  const [isLoaded, appState] = useEntitySocketState<AppState>(Entity.COMMAND, '')
-  const { emit, emitHandler} = useEntitySocketEmit({ entity: Entity.COMMAND })
+  const [isLoaded, appState] = useEntitySocketState<AppState>(Entity.DISPLAY, '')
   
+
+  let children = null
+
   if (!isLoaded) {
-    return (
+    children = (
       <>Loading</>
     )
-  }
-
-  const { ScoreBoard, Preview } = GAMES_CONFIG_MAP[appState!.selectedGameId]
+  } else {
+    const { ScoreBoard, Preview } = GAMES_CONFIG_MAP[appState!.selectedGameId]
   
-  let children = null
-  switch(appState?.status) {
-    case 'PLAYING_GAME': {
-      return <ScoreBoard />
-    }
-    case 'READY_TO_PLAY': {
-      return <Preview />
-      break;
-    }
-    case 'SETTING_UP': {
-      return (
-        <>
-          Setting up
-        </>
-      )
-      break;
-    }
-
-    default: {
-      children = (
-        <>Loading</>
-      )
+    switch(appState?.status) {
+      case 'PLAYING_GAME': {
+        children = <ScoreBoard />
+        break
+      }
+      case 'READY_TO_PLAY': {
+        children = <Preview />
+        break;
+      }
+      case 'SETTING_UP': {
+        children = (
+          <>
+            Setting up
+          </>
+        )
+        break;
+      }
+  
+      default: {
+        children = (
+          <>Loading</>
+        )
+      }
     }
   }
 
   return (
     <AppStateContext.Provider value={{
-      isLoaded: !!appState,
+      isLoaded,
       appState,
-      emit,
-      emitHandler
     }}>
       {children}
     </AppStateContext.Provider>

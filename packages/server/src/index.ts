@@ -73,11 +73,12 @@ const sockets: Sockets = {};
 let state: AppState = {
   status: 'READY_TO_PLAY',
   selectedGameId: GameId.GAME_A,
-  game: {},
+  game: undefined,
   players: [],
   dpad: {
     status: 'INACTIVE'
   },
+  dartboardConnection: 'MISSING'
 }
 
 io.on("connection", (socket) => {
@@ -105,7 +106,7 @@ io.on("connection", (socket) => {
 
     if (socket) {
       // TODO check why I had to do this cast
-      socket.emit(CHANNEL_NAME, event as ToClientEvent);
+      socket.emit?.(CHANNEL_NAME, event as ToClientEvent);
     } else {
       console.error(`the socket "${target}" is not registered`);
     }
@@ -119,7 +120,7 @@ io.on("connection", (socket) => {
     const broadcastState = (state: AppState) => {
       const targets = Object.keys(sockets)
       targets.forEach((target) => {
-        emit({
+        emit?.({
           topic: Topic.STATE,
           action: 'SEND_LAST_APP_STATE',
           payload: {
@@ -131,8 +132,16 @@ io.on("connection", (socket) => {
       })
     }
 
-    const updateState = (path: string, value: unknown) => {
-      state = set(state, path, value)
+    type Update = { path: string, value: unknown }
+    const updateState = (update: (Update | Update[])) => {
+      const updates: Update[] = Array.isArray(update) ? update : [update];
+      
+      updates.forEach(({
+        value, path
+      }) => {
+        state = set(state, path, value)
+      })
+      
       broadcastState(state)
     }
 
@@ -144,7 +153,7 @@ io.on("connection", (socket) => {
     }
 
     if (action === 'REQUEST_FULL_APP_STATE') {
-      emit({
+      emit?.({
         topic: Topic.STATE,
         target: source as ClientReceiver,
         action: 'SEND_LAST_APP_STATE',
@@ -171,7 +180,7 @@ io.on("connection", (socket) => {
               }
             ]
             
-            updateState('players', newPlayers)
+            updateState({ path: 'players', value: newPlayers })
 
             break;
           }
@@ -180,7 +189,7 @@ io.on("connection", (socket) => {
             const { payload } = event
             
             const newPlayers: Array<Player> = players.filter(player => player.id !== payload.id);
-            updateState('players', newPlayers)
+            updateState({ path: 'players', value: newPlayers })
 
             break;
           }
@@ -190,7 +199,8 @@ io.on("connection", (socket) => {
 
       case Topic.DARTBOARD: {
         switch (action) {
-          case 'NOTIFY_THROW_LANDED': {
+          case 'NOTIFY_CONNECTION_ESTABLISHED': {
+            updateState({ path: 'dartboardConnection', value: true })
             break;
           }
         }
@@ -201,12 +211,11 @@ io.on("connection", (socket) => {
         switch (action) {
           case 'SELECT_GAME': {
             const { payload } = event
-            updateState('selectedGameId', payload)
+            updateState({ path: 'selectedGameId', value: payload })
             break;
           }
           case 'START_SELECTED_GAME': {
-            updateState('status', 'PLAYING_GAME')
-
+            updateState({ path: 'status', value: 'PLAYING_GAME' })
             break;
           }
         }
@@ -217,7 +226,7 @@ io.on("connection", (socket) => {
         switch(action) {
           case 'UPDATE_GAME_STATE': {
             const { payload } = event
-            updateState('game', payload)
+            updateState({ path: 'game', value: payload })
             break;
           }
         }
@@ -229,7 +238,7 @@ io.on("connection", (socket) => {
     const updatedGameState = onEvent(event, state as any, emit)
 
     if (updatedGameState) {
-      updateState('game', updatedGameState)
+      updateState({ path: 'game', value: updatedGameState })
     }
   }
 

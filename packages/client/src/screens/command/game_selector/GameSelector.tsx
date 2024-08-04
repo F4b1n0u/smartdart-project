@@ -22,7 +22,7 @@ export const GameSelector = () => {
           return (
             <button
               key={gameId}
-              onClick={emitHandler({
+              onClick={emitHandler?.({
                 topic: Topic.GAMES,
                 action: 'SELECT_GAME',
                 payload: gameId
@@ -34,7 +34,7 @@ export const GameSelector = () => {
         })
       }
       <button
-        onClick={emitHandler({
+        onClick={emitHandler?.({
           topic: Topic.GAMES,
           action: 'START_SELECTED_GAME',
           payload: undefined

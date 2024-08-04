@@ -10,22 +10,22 @@ function Screen() {
     <div>
       <h1>Player Input</h1>
       <DPad
-        onUp={emitHandler({
+        onUp={emitHandler?.({
           topic: Topic.GAME,
           action: 'NOTIFY_D-PAD_PRESSED',
           payload: DPadDirection.UP
         })}
-        onDown={emitHandler({
+        onDown={emitHandler?.({
           topic: Topic.GAME,
           action: 'NOTIFY_D-PAD_PRESSED',
           payload: DPadDirection.DOWN
         })}
-        onLeft={emitHandler({
+        onLeft={emitHandler?.({
           topic: Topic.GAME,
           action: 'NOTIFY_D-PAD_PRESSED',
           payload: DPadDirection.LEFT
         })}
-        onRight={emitHandler({
+        onRight={emitHandler?.({
           topic: Topic.GAME,
           action: 'NOTIFY_D-PAD_PRESSED',
           payload: DPadDirection.RIGHT

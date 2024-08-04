@@ -1,15 +1,15 @@
 
 import { Player, Topic } from '../../types/common'
-import { GameAState, GameAConfig } from './types'
+import { GameBState, GameBConfig } from './types'
 
-const initialGameAState: GameAState = {
+const initialGameBState: GameBState = {
   status: 'IDLE',
   nextPlayerIdByCurrentPlayerId: {},
   currentPlayerId: undefined,
   rounds: []
 }
 
-export const onEvent: GameAConfig['onEvent'] = (event, appState) => {
+export const onEvent: GameBConfig['onEvent'] = (event, appState) => {
   const { status, players, game: gameState } = appState
   if (status != 'PLAYING_GAME' ) {
     return undefined
@@ -17,7 +17,7 @@ export const onEvent: GameAConfig['onEvent'] = (event, appState) => {
 
   const { topic, action } = event
 
-  let updateGameState = gameState || initialGameAState
+  let updateGameState = gameState || initialGameBState
   
   switch(topic) {
     case Topic.GAMES: {
@@ -35,7 +35,7 @@ export const onEvent: GameAConfig['onEvent'] = (event, appState) => {
 
           updateGameState = {
             ...updateGameState,
-            ...initialGameAState,
+            ...initialGameBState,
             nextPlayerIdByCurrentPlayerId,
             currentPlayerId: appState.players?.[0].id,
             rounds: []

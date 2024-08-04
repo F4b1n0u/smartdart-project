@@ -1,5 +1,5 @@
 import { useCallback, useContext } from 'react'
-import { Location, Topic } from '../../../shared/src/types/common'
+import { Location, SCORE_TO_INDEX, Topic } from '../../../shared/src/types/common'
 import { Multiplier } from '../types'
 import { AppStateContext } from '@shared/components/AppStateContext'
 
@@ -10,7 +10,7 @@ export const useDartBoard = () => {
   const connect = useCallback(() => {
     connectToDartBoard({
       onConnected: () => {
-        emit({
+        emit?.({
           topic: Topic.DARTBOARD,
           action: 'NOTIFY_CONNECTION_ESTABLISHED',
           // TODO try to see why we have to provide the payload, as it is marked as optional ???
@@ -18,13 +18,13 @@ export const useDartBoard = () => {
         })
       },
       onDartLanding: (location: Location) => {
-        emit({
+        emit?.({
           topic: Topic.DARTBOARD,
           action: 'NOTIFY_THROW_LANDED',
           payload: location
         })
       },
-      onButtonPress: () => emit({
+      onButtonPress: () => emit?.({
         topic: Topic.DARTBOARD,
         action: 'NOTIFY_BUTTON_PRESSED',
         payload: undefined
@@ -75,7 +75,8 @@ const connectToDartBoard = async ({ onConnected, onDartLanding, onButtonPress }:
       () => {
         const multiplierMapper = Object.values(Multiplier)
 
-        const { value } = event.target;
+        // TODO check the typing of event, as it deems to not match properly so had to cast into any for now
+        const { value } = event?.target! as any;
         const score = value.getUint8(0)
         const multiplier = value.getUint8(1)
 
@@ -84,12 +85,13 @@ const connectToDartBoard = async ({ onConnected, onDartLanding, onButtonPress }:
           onButtonPress();
           console.log('button pressed');
         } else {
+          // really not fan with the casting :s
           const location = {
-            score,
+            score: score as Location['score'],
             multiplier: multiplierMapper[multiplier],
-          };
+            index: SCORE_TO_INDEX[score]! as Location['index']
+          } as Location;
           onDartLanding(location);
-          console.log({ location });
         }
       }
     );

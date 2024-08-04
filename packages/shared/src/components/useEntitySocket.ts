@@ -56,7 +56,7 @@ const useSocket = <
   )
 
   const emit = useCallback<EmitFn<TEmitEvent>>(event => {
-    socket.emit(
+    socket.emit?.(
       CHANNEL_NAME, {
         ...event,
         source: entity,
@@ -65,7 +65,7 @@ const useSocket = <
   }, [socket])
 
   const emitHandler = useCallback<EmitHandlerFn<TEmitEvent>>(event => () => {
-    emit(event)
+    emit?.(event)
   }, [emit])
 
   const handleNewMessage = useCallback((event: TReceiveEvent) => {
@@ -106,6 +106,9 @@ export const useEntitySocketState = <
   path: string,
   defaultWhileLoading?: TState
 ): [
+  // TODO maybe return an object rather than an array ?
+  // this should be used "only" to provide a value to the AppStateContext
+  // so this way you could just spread into the value rather than build an object
   boolean,
   TState | undefined,
   SubjectLike<TState>,
@@ -150,7 +153,7 @@ export const useEntitySocketState = <
   })
 
   useEffect(() => {
-    emit({
+    emit?.({
       topic: Topic.STATE,
       action: 'REQUEST_FULL_APP_STATE',
       payload: undefined

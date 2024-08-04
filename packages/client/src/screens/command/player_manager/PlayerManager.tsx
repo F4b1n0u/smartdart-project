@@ -52,7 +52,7 @@ const usePlayerManager = () => {
 
   const addPlayer = useCallback(({ name, photo }: Omit<Player, 'id'>) => {
     if (name.trim() && photo) {
-      emit({
+      emit?.({
         topic: Topic.PLAYERS,
         action: 'ADD_PLAYER',
         payload: { name, photo }
@@ -61,7 +61,7 @@ const usePlayerManager = () => {
   }, [emit, players]);
 
   const removePlayer = (id: string) => {
-    emit({
+    emit?.({
       topic: Topic.PLAYERS,
       action: 'REMOVE_PLAYER',
       payload: { id }

@@ -10,8 +10,8 @@ const blankEmit = () => console.log('StateContext as not been initialized yet')
 export type AppStateContextType<TGameState> = {
   isLoaded: boolean,
   appState: AppState<TGameState> | undefined,
-  emit: EmitFn<FromClientEvent>
-  emitHandler: EmitHandlerFn<FromClientEvent>
+  emit?: EmitFn<FromClientEvent>
+  emitHandler?: EmitHandlerFn<FromClientEvent>
 }
 export const AppStateContext = createContext<AppStateContextType<unknown>>({
   isLoaded: false,

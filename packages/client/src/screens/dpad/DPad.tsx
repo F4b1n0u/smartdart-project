@@ -50,10 +50,10 @@ const Button = styled.button`
 `;
 
 type DpadProps = {
-  onUp: () => void,
-  onDown: () => void,
-  onLeft: () => void,
-  onRight: () => void
+  onUp?: () => void,
+  onDown?: () => void,
+  onLeft?: () => void,
+  onRight?: () => void
 }
 
 export const DPad = ({ onUp, onDown, onLeft, onRight }: DpadProps) => {

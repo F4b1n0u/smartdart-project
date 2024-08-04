@@ -5,13 +5,13 @@ const Background = styled.div`
   display; flex;
   flex: 1 1 auto;
   width: 100%;
-  background-color: red;
+  background-color: green;
 `
 
 export const Preview = () => {
   return (
     <Background>
-      <span> Game A Preview</span>
+      <span> Game B Preview</span>
     </Background>
   )
 }

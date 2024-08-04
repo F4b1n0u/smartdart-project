@@ -33,10 +33,42 @@ export enum Multiplier {
   TRIPLE = 'TRIPLE',
 }
 
-export type Location = {
-  score: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 25,
-  multiplier: Multiplier
-}
+// when you look at the board,starts from the center and after go up and after go clockwise
+export const INDEX_TO_SCORE = [
+  25, 20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5,
+]
+export const SCORE_TO_INDEX: Array<number | undefined> = [undefined]
+// 0, 21,22,23,24 are not on the board
+// undefined, 2,9,11,4,20,6,13,15,18,7,16,19,5,17,8,14,10,3,12,1,undefined, undefined, undefined, undefined, 0
+INDEX_TO_SCORE.forEach((score) => {
+  SCORE_TO_INDEX[score] = INDEX_TO_SCORE.indexOf(score)
+});
+
+export type LocationIndex = 0 | 20 | 1 | 18 | 4 | 13 | 6 | 10 | 15 | 2 | 17 | 3 | 19 | 7 | 16 | 8 | 11 | 14 | 9 | 12 | 5
+export type ScoreIndex =   25 | 20 | 1 | 18 | 4 | 13 | 6 | 10 | 15 | 2 | 17 | 3 | 19 | 7 | 16 | 8 | 11 | 14 | 9 | 12 | 5
+
+export type Location =
+  { index: 0,  multiplier: Multiplier.SINGLE_SLIM | Multiplier.DOUBLE, score: 25 } |
+  { index: 1,  multiplier: Multiplier, score: 20 } |
+  { index: 2,  multiplier: Multiplier, score: 1 } |
+  { index: 3,  multiplier: Multiplier, score: 18 } |
+  { index: 4,  multiplier: Multiplier, score: 4 } |
+  { index: 5,  multiplier: Multiplier, score: 13 } |
+  { index: 6,  multiplier: Multiplier, score: 6 } |
+  { index: 7,  multiplier: Multiplier, score: 10 } |
+  { index: 8,  multiplier: Multiplier, score: 15 } |
+  { index: 9,  multiplier: Multiplier, score: 2 } |
+  { index: 10,  multiplier: Multiplier, score: 17 } |
+  { index: 11,  multiplier: Multiplier, score: 3 } |
+  { index: 12,  multiplier: Multiplier, score: 19 } |
+  { index: 13,  multiplier: Multiplier, score: 7 } |
+  { index: 14,  multiplier: Multiplier, score: 16 } |
+  { index: 15,  multiplier: Multiplier, score: 8 } |
+  { index: 16,  multiplier: Multiplier, score: 11 } |
+  { index: 17,  multiplier: Multiplier, score: 14 } |
+  { index: 18,  multiplier: Multiplier, score: 9 } |
+  { index: 19,  multiplier: Multiplier, score: 12 } |
+  { index: 20,  multiplier: Multiplier, score: 5 }
 
 export type Throw = {
   location?: Location
@@ -50,8 +82,8 @@ export type Player = {
 
 export enum GameId {
   GAME_A = 'GAME_A',
-  // GAME_B = 'GAME_B',
-  // GAME_C = 'GAME_C'
+  GAME_B = 'GAME_B',
+  GAME_C = 'GAME_C'
 }
 
 export enum DPadDirection {
@@ -76,13 +108,15 @@ export type AppState<TGameState = unknown> = {
   status:
     'READY_TO_PLAY' | // mainScreen: display preview of focused game  // controlScreen: display the carrousell
     'SETTING_UP' |    // mainScreen: display setting up helpers       // controlScreen: display setup component
-    'PLAYING_GAME'    // mainScreen: display game state               // controlScreen: display Round Manager
+    'PLAYING_GAME',    // mainScreen: display game state               // controlScreen: display Round Manager
   
-  selectedGameId: GameId
+  dartboardConnection: 'MISSING' | 'ESTABLISHED',
+
+  selectedGameId: GameId,
 
   // relevant only if status === 'PLAYING_GAME'
   // must be reset if not in this status
-  game: TGameState,
+  game?: TGameState,
   
   // always here and accessible at all time
   players: ReadonlyArray<Player>,

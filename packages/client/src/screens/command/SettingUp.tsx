@@ -1,16 +1,14 @@
-import { useDartBoard } from '../../dartboard/useDartBoard'
+import React from 'react'
+
 import PlayerManager from './player_manager/PlayerManager'
 import { GameSelector } from './game_selector/GameSelector'
 
 const SettingUp = () => {
-  const { connect } = useDartBoard()
 
   return (
     <>
       <GameSelector />
       <PlayerManager />
-
-      <button onClick={connect}>connect to dartboard</button>
     </>
   )
 }

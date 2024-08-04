@@ -2,7 +2,7 @@ import 'react'
 import { AppStateContext } from '@shared/components/AppStateContext';
 import { VirtualDartBoard } from '@shared/components/VirtualDartBoard';
 import React, { useContext } from 'react';
-import { GameAState } from './types';
+import { GameCState } from './types';
 
 import styled from 'styled-components';
 import { Player } from '@shared/types/common';
@@ -45,7 +45,7 @@ export const ScoreBoard = () => {
   }
 
   const { players } = appState
-  const gameState: GameAState = appState.game as GameAState
+  const gameState: GameCState = appState.game as GameCState
 
   if (!gameState) {
     return <Loading />
@@ -61,7 +61,7 @@ export const ScoreBoard = () => {
 
   return (
     <>
-      <span>Game A Scoreboard</span>
+      <span>Game C Scoreboard</span>
 
       {currenPlayer && (
         <PlayerComponent {...currenPlayer}/>

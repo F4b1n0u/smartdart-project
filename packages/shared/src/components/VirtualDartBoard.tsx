@@ -1,9 +1,10 @@
+import React from 'react'
+import '@pixi/events';
 import { useCallback, useMemo } from 'react';
 import { Stage, Graphics } from '@pixi/react';
 import { PointData } from 'pixi.js';
-import { Multiplier, Zone, Hit } from '../../types'
-import '@pixi/events';
-import { Location } from '../../../../shared/src/types/common';
+import { Multiplier, Location, Throw, INDEX_TO_SCORE } from '../types/common'
+
 
 const totalSegments = 20;
 const multipliers = Object.values(Multiplier);
@@ -31,9 +32,6 @@ const colorMapping: ColorMapping = {
   },
 };
 const segmentAngle = 360 / totalSegments; // Each segment covers 18 degrees
-const BOARD = [
-  20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5,
-];
 
 type polarToCartesianFn = (
   radius: number,
@@ -69,23 +67,27 @@ type Position = {
   y: number,
 }
 
+type Zone = Pick<Location, 'index' | 'multiplier'>
+
 type ZoneComponentProps = {
-  zone: Zone,
-  hits: Array<Hit>,
+  location: Location,
+  throws: Array<Throw>,
   center: Position,
   radiiPercents: RadiiPercents,
-  onZoneBeenHit: (hit: Hit) => void,
+  onZoneBeenSelected: (zone: Zone) => void,
   scale: number
 }
 const ZoneComponent = ({
-  zone: { index, multiplier },
-  hits,
+  location: { index, multiplier },
+  throws = [],
   center,
   radiiPercents,
-  onZoneBeenHit,
+  onZoneBeenSelected,
   scale = 1
 }: ZoneComponentProps) => {
-  const startAngle = -90 - segmentAngle / 2 + index * segmentAngle; // Start angle for the segment
+  const offsetIndex = index - 1
+
+  const startAngle = -90 - segmentAngle / 2 + (offsetIndex) * segmentAngle; // Start angle for the segment
   const endAngle = startAngle + segmentAngle; // End angle for the segment
   const startAngleInRadian = (Math.PI / 180) * startAngle;
   const endAngleInRadian = (Math.PI / 180) * endAngle;
@@ -99,8 +101,12 @@ const ZoneComponent = ({
   );
   const endOuter = polarToCartesian(outerRadius * scale, endAngleInRadian, center);
 
-  const hasBeenHit = !!hits.find((hit) => BOARD.indexOf(hit.score) === index && hit.multiplier === multiplier)
-  const alt = index % 2
+  const hasBeenHit = !!throws.find(({ location }) => {
+    const { index: hitIndex, multiplier: hitMultiplier } = location || {}
+    return hitMultiplier === multiplier && index === hitIndex
+  })
+
+  const alt = offsetIndex % 2
     ? 'even'
     : 'odd'
 
@@ -110,12 +116,12 @@ const ZoneComponent = ({
 
   const handleZoneBeenHit = useCallback(
     () => {
-      onZoneBeenHit({
-        score: BOARD[index],
+      onZoneBeenSelected({
         multiplier,
+        index: index as Location['index'],
       })
     },
-    [onZoneBeenHit]
+    [onZoneBeenSelected]
   )
 
   return (
@@ -152,40 +158,42 @@ const ZoneComponent = ({
 
 type VirtualDartBoardProps = {
   center: Position,
-  hits?: Array<Hit>,
-  onZoneBeenHit?: (dart: Location) => void,
+  throws?: Array<Throw>,
+  onZoneBeenSelected?: (zone: Zone) => void,
   radiiPercents?: RadiiPercents,
   height: number,
   width: number
   scale: number
 }
 
-const VirtualDartBoard = ({
+export const VirtualDartBoard = ({
   center,
-  onZoneBeenHit = () => {},
+  onZoneBeenSelected = () => {},
   radiiPercents = realRadiiPercents,
-  hits = [],
+  throws = [],
   height,
   width,
   scale
 }: VirtualDartBoardProps) => {
   const zones = useMemo(() => {
     return Array(totalSegments).fill('').map((_, index) => {
+      // 0 is for the bull's eye
       return multipliers.map(multiplier => {
         return (
           <ZoneComponent
             scale={scale}
             key={`${index}-${multiplier}`}
-            zone={{ index, multiplier }}
-            hits={hits}
+            location={{ index, multiplier, score: INDEX_TO_SCORE[index]} as unknown as Location}
+            throws={throws}
             center={center}
             radiiPercents={radiiPercents}
-            onZoneBeenHit={onZoneBeenHit}
+            onZoneBeenSelected={onZoneBeenSelected}
           />
         )
       })
+      
     }).flat()
-  }, [hits])
+  }, [throws])
     
   return (
     <Stage
@@ -199,5 +207,3 @@ const VirtualDartBoard = ({
     </Stage>
   );
 }
-
-export default VirtualDartBoard;

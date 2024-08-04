@@ -22,5 +22,5 @@ export type GameConfig<
     appState: AppState<TGameState>,
     emit: ( event: TToEvent ) => void // emit from the server to the client
   ) => TGameState | undefined,
-  isPlayable: (appState: AppState) => boolean     // for command ready to play button
+  isPlayable: (appState: AppState<TGameState>) => boolean     // for command ready to play button
 }
