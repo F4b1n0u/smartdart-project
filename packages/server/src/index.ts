@@ -245,9 +245,9 @@ io.on("connection", (socket) => {
   socket.on(CHANNEL_NAME, handleNewMessage);
 });
 
-httpServer.listen(PORT_EXPRESS, () => {
-  log('info', `Express server running on port ${PORT_EXPRESS}`);
-  log('info', "CORS_SETTINGS: ", CORS_SETTINGS);
-});
+// httpServer.listen(PORT_EXPRESS, () => {
+//   log('info', `Express server running on port ${PORT_EXPRESS}`);
+//   log('info', "CORS_SETTINGS: ", CORS_SETTINGS);
+// });
 
 io.listen(PORT_SOCKET_IO)

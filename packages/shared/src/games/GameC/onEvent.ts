@@ -1,13 +1,16 @@
 
-import { Player, Topic } from '../../types/common'
+import { MULTIPLIER_TO_NUMBER, Player, Topic } from '../../types/common'
 import { GameCState, GameCConfig } from './types'
 
 const initialGameCState: GameCState = {
   status: 'IDLE',
   nextPlayerIdByCurrentPlayerId: {},
   currentPlayerId: undefined,
-  rounds: []
+  rounds: [],
+  maxThrowsPerRound: 3
 }
+
+const TARGET_SCORE = 100
 
 export const onEvent: GameCConfig['onEvent'] = (event, appState) => {
   const { status, players, game: gameState } = appState
@@ -52,7 +55,8 @@ export const onEvent: GameCConfig['onEvent'] = (event, appState) => {
             return 
           }
 
-          if (updateGameState.rounds[updateGameState.rounds.length - 1].canFinishRound) {
+          let currentRound = updateGameState.rounds.find(({ status }) => status === 'IN_PROGRESS')!
+          if (currentRound.canFinishRound) {
             return
           }
 
@@ -72,9 +76,9 @@ export const onEvent: GameCConfig['onEvent'] = (event, appState) => {
               return round
             })
           }
-
-          const canFinishRound = updateGameState.rounds[updateGameState.rounds.length - 1].throws.length > 2
-          updateGameState.rounds[updateGameState.rounds.length - 1].canFinishRound = canFinishRound
+          currentRound = updateGameState.rounds.find(({ status }) => status === 'IN_PROGRESS')!
+          const canFinishRound = currentRound.throws.length > 2
+          currentRound.canFinishRound = canFinishRound
 
           break;
         }
@@ -90,6 +94,7 @@ export const onEvent: GameCConfig['onEvent'] = (event, appState) => {
             rounds: [
               ...updateGameState.rounds,
               {
+                status: 'IN_PROGRESS',
                 playingPlayerId: updateGameState.currentPlayerId!,
                 throws: [],
                 canFinishRound: false
@@ -120,7 +125,8 @@ export const onEvent: GameCConfig['onEvent'] = (event, appState) => {
         }
 
         case 'SIMULATE_THROW': {
-          if (updateGameState.rounds[updateGameState.rounds.length - 1].canFinishRound) {
+          const currentRound = updateGameState.rounds.find(({ status }) => status === 'IN_PROGRESS')!
+          if (currentRound.canFinishRound) {
             return
           }
           const { payload: location } = event
@@ -163,16 +169,66 @@ export const onEvent: GameCConfig['onEvent'] = (event, appState) => {
           break
         }
         case 'FINISH_ROUND': {
+          const totalScorePerPlayerId = players.reduce<Record<Player['id'], number>>((lookup, { id }) => {
+            const playerTotal = gameState!.rounds.filter(({ playingPlayerId }) => playingPlayerId === id).reduce(
+              (total, { throws }) => total + throws.reduce(
+                (acc, { location }) =>
+                  acc + (
+                    location
+                      ? location.score * MULTIPLIER_TO_NUMBER[location.multiplier]
+                      : 0
+                  ),
+                0
+              ),
+              0
+            )
+            
+            return {
+              ...lookup,
+              [id]: playerTotal
+            }
+          }, {})
+
+          const rankPlayers = (playerScores: Record<Player['id'], number>) => {
+            // Convert the map into an array of objects { playerId, score }
+            const playersArray = Object.entries(playerScores).map(([playerId, score]) => ({
+              playerId,
+              score
+            }));
+          
+            // Sort the array by score in descending order
+            playersArray.sort((a, b) => b.score - a.score);
+          
+            return playersArray;
+          }
+
+          const [{score: highestScore}, ] = rankPlayers(totalScorePerPlayerId)
+
+          const isGameOver = highestScore > TARGET_SCORE
+
           updateGameState = {
             ...updateGameState,
-            status: 'IDLE',
-            currentPlayerId: updateGameState.nextPlayerIdByCurrentPlayerId[updateGameState.currentPlayerId!] 
+            status: isGameOver ? 'FINISHED' :'IDLE',
+            currentPlayerId: updateGameState.nextPlayerIdByCurrentPlayerId[updateGameState.currentPlayerId!],
+            rounds: updateGameState.rounds.map((round, index, arr) => {
+              if (index === arr.length - 1) {
+                return {
+                  ...round,
+                  status: 'FINISHED'
+                }
+              }
+              return round
+            })
           }
           break
         }
       }
-      const canFinishRound = updateGameState.rounds[updateGameState.rounds.length - 1].throws.length > 2
-      updateGameState.rounds[updateGameState.rounds.length - 1].canFinishRound = canFinishRound
+      const currentRound = updateGameState.rounds.find(({ status }) => status === 'IN_PROGRESS')!
+      if (currentRound) {
+        const canFinishRound = currentRound.throws.length > 2
+        currentRound.canFinishRound = canFinishRound
+      }
+      
       break
     }
   }

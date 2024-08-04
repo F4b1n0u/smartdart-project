@@ -14,7 +14,6 @@ export type GameConfig<
   // that's why the socket hooks are injected via props
   Preview: ComponentType,                     // for display entity
   ScoreBoard: ComponentType,    // for display entity
-  Outcome: ComponentType,                     // for display entity
   RoundManager: ComponentType,  // for command entity
   Thumbnail: ComponentType,                   // for command entity
   onEvent: (                                  // for controller logic

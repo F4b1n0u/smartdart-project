@@ -8,6 +8,7 @@ export type GameAState = {
   nextPlayerIdByCurrentPlayerId: Record<Player['id'], Player['id']>,
   currentPlayerId?: Player['id'],
   rounds: ReadonlyArray<Round>
+  maxThrowsPerRound: number
 }
 
 export type FromGameAEvent = FromClientEvent

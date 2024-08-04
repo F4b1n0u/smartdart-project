@@ -33,6 +33,13 @@ export enum Multiplier {
   TRIPLE = 'TRIPLE',
 }
 
+export const MULTIPLIER_TO_NUMBER = {
+  [Multiplier.SINGLE_FAT]: 1,
+  [Multiplier.SINGLE_SLIM]: 1,
+  [Multiplier.DOUBLE]: 2,
+  [Multiplier.TRIPLE]: 3,
+}
+
 // when you look at the board,starts from the center and after go up and after go clockwise
 export const INDEX_TO_SCORE = [
   25, 20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5,
@@ -98,6 +105,9 @@ export enum DPadDirection {
 }
 
 export type Round = {
+  status:
+    'IN_PROGRESS' | // created when started, so not active round while waiting
+    'FINISHED', // useful to filter, to not just get the last round but the last in progress one
   playingPlayerId: Player['id'],
   throws: Array<Throw>,
   canFinishRound: boolean
