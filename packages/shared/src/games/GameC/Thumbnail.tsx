@@ -3,13 +3,13 @@ import React from 'react';
 import styled from 'styled-components';
 
 const Background = styled.div`
-  background-color: green
+  background-color: green;
 `
 
 export const Thumbnail = () => {
   return (
     <>
-      <Background>Game C thumbnail</Background>
+      <Background>Game A - first to 300</Background>
     </>
   )
 }

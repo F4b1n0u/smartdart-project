@@ -36,7 +36,13 @@ export type FromGameEvent = RequestFullAppStateEvent |
     Topic.GAME,
     'CANCEL_LAST_THROW',
     undefined
+  > |
+  FromCommandEvent<
+    Topic.GAME,
+    'BACK_TO_HOME',
+    undefined
   >
+  
 
   // basically event you are going to listen to in the game config.onEvent cb
 export type ToGameEvent = NotifyAppStateChangeEvent |

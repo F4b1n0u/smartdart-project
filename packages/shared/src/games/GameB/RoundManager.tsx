@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 
-import { AppState, INDEX_TO_SCORE, Multiplier, SCORE_TO_INDEX, Topic } from '../../types/common';
+import { AppState, Multiplier, SCORE_TO_INDEX, Topic } from '../../types/common';
 import { GameBConfig, GameBState } from './types';
 import { AppStateContext } from '@shared/components/AppStateContext';
 
@@ -122,8 +122,12 @@ export const RoundManager: GameBConfig['RoundManager'] = () => {
           </button>
         </div>
       )
-
       break;
+    }
+    case 'FINISHED': {
+      return (
+        <h3>GAME OVER</h3>
+      )
     }
   }
 

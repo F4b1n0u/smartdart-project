@@ -10,7 +10,7 @@ const initialGameBState: GameBState = {
   maxThrowsPerRound: 3
 }
 
-const TARGET_SCORE = 100
+const TARGET_SCORE = 200
 
 export const onEvent: GameBConfig['onEvent'] = (event, appState) => {
   const { status, players, game: gameState } = appState
@@ -204,7 +204,7 @@ export const onEvent: GameBConfig['onEvent'] = (event, appState) => {
 
           const [{score: highestScore}, ] = rankPlayers(totalScorePerPlayerId)
 
-          const isGameOver = highestScore >= TARGET_SCORE
+          const isGameOver = highestScore > TARGET_SCORE
 
           updateGameState = {
             ...updateGameState,

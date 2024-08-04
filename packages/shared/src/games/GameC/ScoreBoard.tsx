@@ -168,6 +168,7 @@ export const ScoreBoard = () => {
       break
     }
 
+    case 'IDLE':
     case 'RUNNING': {
       return (
         <Root>

@@ -224,9 +224,18 @@ io.on("connection", (socket) => {
     
       case Topic.GAME: {
         switch(action) {
-          case 'UPDATE_GAME_STATE': {
-            const { payload } = event
-            updateState({ path: 'game', value: payload })
+          case 'BACK_TO_HOME': {
+            updateState([
+              {
+                path: 'game',
+                value: undefined
+              },
+              {
+                path: 'status',
+                value: 'READY_TO_PLAY'
+              }
+            ])
+
             break;
           }
         }

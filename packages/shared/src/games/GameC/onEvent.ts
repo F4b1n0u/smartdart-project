@@ -10,7 +10,7 @@ const initialGameCState: GameCState = {
   maxThrowsPerRound: 3
 }
 
-const TARGET_SCORE = 100
+const TARGET_SCORE = 300
 
 export const onEvent: GameCConfig['onEvent'] = (event, appState) => {
   const { status, players, game: gameState } = appState

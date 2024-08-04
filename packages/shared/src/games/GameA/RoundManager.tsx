@@ -126,7 +126,20 @@ export const RoundManager: GameAConfig['RoundManager'] = () => {
     }
     case 'FINISHED': {
       return (
-        <h3>GAME OVER</h3>
+        <>
+          <h3>GAME OVER</h3>
+
+          <button
+          onClick={emitHandler?.({
+            topic: Topic.GAME,
+            action: 'BACK_TO_HOME',
+            payload: undefined
+          })}
+          >
+           Back to home screen
+          </button>
+        </>
+       
       )
     }
   }

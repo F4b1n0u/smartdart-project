@@ -122,8 +122,12 @@ export const RoundManager: GameCConfig['RoundManager'] = () => {
           </button>
         </div>
       )
-
       break;
+    }
+    case 'FINISHED': {
+      return (
+        <h3>GAME OVER</h3>
+      )
     }
   }
 
