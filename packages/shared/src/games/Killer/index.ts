@@ -1,4 +1,4 @@
-import { GameAConfig  } from './types'
+import { KillerConfig } from './types'
 
 import { Preview } from './Preview'
 import { ScoreBoard } from './ScoreBoard'
@@ -6,7 +6,7 @@ import { Thumbnail } from './Thumbnail'
 import { RoundManager } from './RoundManager'
 import { onEvent } from './onEvent'
 
-const config: GameAConfig = {
+const config: KillerConfig = {
   Preview,
   ScoreBoard,
   Thumbnail,

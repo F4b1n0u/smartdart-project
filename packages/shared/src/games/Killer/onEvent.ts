@@ -1,8 +1,8 @@
 
 import { MULTIPLIER_TO_NUMBER, Player, Topic } from '../../types/common'
-import { GameAState, GameAConfig } from './types'
+import { KillerState, KillerConfig } from './types'
 
-const initialGameAState: GameAState = {
+const initialKillerState: KillerState = {
   status: 'IDLE',
   nextPlayerIdByCurrentPlayerId: {},
   currentPlayerId: undefined,
@@ -12,7 +12,7 @@ const initialGameAState: GameAState = {
 
 const TARGET_SCORE = 100
 
-export const onEvent: GameAConfig['onEvent'] = (event, appState) => {
+export const onEvent: KillerConfig['onEvent'] = (event, appState) => {
   const { status, players, game: gameState } = appState
   if (status != 'PLAYING_GAME' ) {
     return undefined
@@ -20,7 +20,7 @@ export const onEvent: GameAConfig['onEvent'] = (event, appState) => {
 
   const { topic, action } = event
 
-  let updateGameState = gameState || initialGameAState
+  let updateGameState = gameState || initialKillerState
   
   switch(topic) {
     case Topic.GAMES: {
@@ -38,7 +38,7 @@ export const onEvent: GameAConfig['onEvent'] = (event, appState) => {
 
           updateGameState = {
             ...updateGameState,
-            ...initialGameAState,
+            ...initialKillerState,
             nextPlayerIdByCurrentPlayerId,
             currentPlayerId: appState.players?.[0].id,
             rounds: []

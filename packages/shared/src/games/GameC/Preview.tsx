@@ -11,7 +11,7 @@ const Background = styled.div`
 export const Preview = () => {
   return (
     <Background>
-      <span> Game C Preview</span>
+      <span>Game C - first to 300</span>
     </Background>
   )
 }

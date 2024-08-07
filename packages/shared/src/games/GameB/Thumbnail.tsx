@@ -9,7 +9,7 @@ const Background = styled.div`
 export const Thumbnail = () => {
   return (
     <>
-      <Background>Game A - first to 200</Background>
+      <Background>Game B - first to 200</Background>
     </>
   )
 }

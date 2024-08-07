@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 
 import { AppState, INDEX_TO_SCORE, Multiplier, SCORE_TO_INDEX, Topic } from '../../types/common';
-import { GameAConfig, GameAState } from './types';
+import { KillerConfig, KillerState } from './types';
 import { AppStateContext } from '@shared/components/AppStateContext';
 
 const Dart = styled.img`
@@ -24,9 +24,9 @@ const Photo = styled.img`
   object-fit: cover;
 `;
 
-export const RoundManager: GameAConfig['RoundManager'] = () => {
+export const RoundManager: KillerConfig['RoundManager'] = () => {
   const { appState, emitHandler } = useContext(AppStateContext)
-  const { game: gameState } = appState as AppState<GameAState>
+  const { game: gameState } = appState as AppState<KillerState>
 
   if (!appState || !gameState) {
     return (

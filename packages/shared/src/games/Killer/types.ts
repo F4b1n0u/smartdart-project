@@ -3,16 +3,17 @@ import { Player, Round } from "@shared/types/common"
 import { ToGameEvent } from "@shared/types/events/GameEvent"
 import { FromClientEvent } from "@shared/types/events/utils/ClientEvent"
 
-export type GameAState = {
+export type KillerState = {
   status: 'IDLE' | 'RUNNING' | 'FINISHED' | 'STOPPED' | 'PAUSED'
   nextPlayerIdByCurrentPlayerId: Record<Player['id'], Player['id']>,
   currentPlayerId?: Player['id'],
   rounds: ReadonlyArray<Round>
   maxThrowsPerRound: number
+  // currentKillerId: Player['id']
 }
 
-export type FromGameAEvent = FromClientEvent
-export type ToGameAEvent = ToGameEvent
+export type FromKillerEvent = FromClientEvent
+export type ToKillerEvent = ToGameEvent
 
-export type GameAConfig = GameConfig<GameAState, FromGameAEvent, ToGameAEvent>
+export type KillerConfig = GameConfig<KillerState, FromKillerEvent, ToKillerEvent>
 

@@ -72,7 +72,7 @@ const sockets: Sockets = {};
 // TODO handle this much better than that !
 let state: AppState = {
   status: 'READY_TO_PLAY',
-  selectedGameId: GameId.GAME_A,
+  selectedGameId: GameId.KILLER,
   game: undefined,
   players: [],
   dpad: {
@@ -237,6 +237,15 @@ io.on("connection", (socket) => {
             ])
 
             break;
+          }
+        }
+        break;
+      }
+      case Topic.SETUP: {
+        switch(action) {
+          case 'UPDATE_DARTBOARD_POSITION': {
+            // TODO update setup location
+            break
           }
         }
         break;

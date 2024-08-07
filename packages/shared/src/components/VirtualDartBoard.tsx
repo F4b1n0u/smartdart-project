@@ -5,7 +5,6 @@ import { Stage, Graphics } from '@pixi/react';
 import { PointData } from 'pixi.js';
 import { Multiplier, Location, Throw, INDEX_TO_SCORE } from '../types/common'
 
-
 const totalSegments = 20;
 const multipliers = Object.values(Multiplier);
 
@@ -20,9 +19,9 @@ export type ColorMapping = {
 const colorMapping: ColorMapping = {
   even: {
     [Multiplier.SINGLE_SLIM]: 'white',
-    [Multiplier.TRIPLE]: 'blue',
+    [Multiplier.TRIPLE]: 'green',
     [Multiplier.SINGLE_FAT]: 'white',
-    [Multiplier.DOUBLE]: 'blue',
+    [Multiplier.DOUBLE]: 'green',
   },
   odd: {
     [Multiplier.SINGLE_SLIM]: 'black',
@@ -46,9 +45,14 @@ const polarToCartesian: polarToCartesianFn = (radius, angleInRadians, center) =>
 }
 
 export type RadiiPercents = {
-  [key in Multiplier]: [number, number]
+  [key in Multiplier | 'BULLSEYE']: [number, number]
+}
+export type BullseyeOuterRadiusPercents = {
+  [Multiplier.SINGLE_SLIM]: number
+  [Multiplier.DOUBLE]: number
 }
 export const realRadiiPercents: RadiiPercents = {
+  ['BULLSEYE']: [5, 11],
   [Multiplier.SINGLE_SLIM]: [11, 57],
   [Multiplier.TRIPLE]: [57, 61], 
   [Multiplier.SINGLE_FAT]: [61, 91],
@@ -57,11 +61,13 @@ export const realRadiiPercents: RadiiPercents = {
 
 const ratio = 100/11
 export const touchableRadiiPercents: RadiiPercents = {
+  ['BULLSEYE']: [6, 11],
   [Multiplier.SINGLE_SLIM]: [2 * ratio, 5 * ratio],
   [Multiplier.TRIPLE]:      [5 * ratio, 7 * ratio],
   [Multiplier.SINGLE_FAT]:  [7 * ratio, 9 * ratio],
   [Multiplier.DOUBLE]:      [9 * ratio, 11 * ratio],
 }
+
 type Position = {
   x: number,
   y: number,
@@ -75,7 +81,8 @@ type ZoneComponentProps = {
   center: Position,
   radiiPercents: RadiiPercents,
   onZoneBeenSelected: (zone: Zone) => void,
-  scale: number
+  scale: number,
+  hitColor: string
 }
 const ZoneComponent = ({
   location: { index, multiplier },
@@ -83,7 +90,8 @@ const ZoneComponent = ({
   center,
   radiiPercents,
   onZoneBeenSelected,
-  scale = 1
+  scale = 1,
+  hitColor = 'blue'
 }: ZoneComponentProps) => {
   const offsetIndex = index - 1
 
@@ -111,7 +119,7 @@ const ZoneComponent = ({
     : 'odd'
 
   const color = hasBeenHit
-    ? 'green'
+    ? hitColor
     : colorMapping[alt][multiplier]
 
   const handleZoneBeenHit = useCallback(
@@ -156,6 +164,68 @@ const ZoneComponent = ({
   )
 }
 
+type BullseyeComponentProps = {
+  multiplier: Multiplier.SINGLE_SLIM | Multiplier.DOUBLE
+  throws: Array<Throw>,
+  center: Position,
+  radiiPercents: RadiiPercents,
+  onZoneBeenSelected: (zone: Zone) => void,
+  scale: number
+}
+const BullseyeComponent = ({
+  multiplier,
+  throws = [],
+  center,
+  radiiPercents,
+  onZoneBeenSelected,
+  scale = 1
+}: BullseyeComponentProps) => {
+  const [doubleRadius, singleRadius] = radiiPercents['BULLSEYE'];
+
+  const outerRadius = (
+    multiplier === Multiplier.DOUBLE
+      ? doubleRadius 
+      : singleRadius
+  ) * scale
+
+  const hasBeenHit = !!throws.find(({ location }) => {
+    const { index: hitIndex, multiplier: hitMultiplier } = location || {}
+    return hitMultiplier === multiplier && 0 === hitIndex
+  })
+
+  const alt = multiplier === Multiplier.SINGLE_SLIM
+    ? 'even'
+    : 'odd'
+
+  const color = hasBeenHit
+    ? 'green'
+    : colorMapping[alt]['DOUBLE']
+
+  const handleZoneBeenHit = useCallback(
+    () => {
+      onZoneBeenSelected({
+        multiplier,
+        index: 0,
+      })
+    },
+    [onZoneBeenSelected]
+  )
+
+  return (
+    <Graphics
+      interactive={true}
+      pointerdown={handleZoneBeenHit}
+      key={`0-${multiplier}`}
+      draw={(g) => {
+        g.beginFill(color);
+        g.drawCircle(center.x, center.y, outerRadius);
+        g.endFill()
+        g.closePath();
+      }}
+    />
+  )
+}
+
 type VirtualDartBoardProps = {
   center: Position,
   throws?: Array<Throw>,
@@ -178,19 +248,39 @@ export const VirtualDartBoard = ({
   const zones = useMemo(() => {
     return Array(totalSegments).fill('').map((_, index) => {
       // 0 is for the bull's eye
-      return multipliers.map(multiplier => {
-        return (
-          <ZoneComponent
-            scale={scale}
-            key={`${index}-${multiplier}`}
-            location={{ index, multiplier, score: INDEX_TO_SCORE[index]} as unknown as Location}
-            throws={throws}
-            center={center}
-            radiiPercents={radiiPercents}
-            onZoneBeenSelected={onZoneBeenSelected}
-          />
-        )
-      })
+      return [
+        ...multipliers.map(multiplier => {
+          return (
+            <ZoneComponent
+              scale={scale}
+              key={`${index}-${multiplier}`}
+              location={{ index, multiplier, score: INDEX_TO_SCORE[index]} as unknown as Location}
+              throws={throws}
+              center={center}
+              radiiPercents={radiiPercents}
+              onZoneBeenSelected={onZoneBeenSelected}
+            />
+          )
+        }),
+        <BullseyeComponent
+          scale={scale}
+          key={`${0}-${Multiplier.SINGLE_SLIM}`}
+          multiplier={Multiplier.SINGLE_SLIM}
+          throws={throws}
+          center={center}
+          radiiPercents={realRadiiPercents}
+          onZoneBeenSelected={onZoneBeenSelected}
+        />,
+        <BullseyeComponent
+          scale={scale}
+          key={`${0}-${Multiplier.DOUBLE}`}
+          multiplier={Multiplier.DOUBLE}
+          throws={throws}
+          center={center}
+          radiiPercents={realRadiiPercents}
+          onZoneBeenSelected={onZoneBeenSelected}
+        />
+      ]
       
     }).flat()
   }, [throws])

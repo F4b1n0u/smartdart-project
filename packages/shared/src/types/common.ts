@@ -78,7 +78,7 @@ export type Location =
   { index: 20,  multiplier: Multiplier, score: 5 }
 
 export type Throw = {
-  location?: Location
+  location?: Location // empty is the throw is a miss
 }
 
 export type Player = {
@@ -88,7 +88,7 @@ export type Player = {
 }
 
 export enum GameId {
-  GAME_A = 'GAME_A',
+  KILLER = 'KILLER',
   GAME_B = 'GAME_B',
   GAME_C = 'GAME_C'
 }
